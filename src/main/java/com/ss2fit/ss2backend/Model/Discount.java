@@ -29,7 +29,6 @@ public class Discount {
     private Date createdDate;
     private Date startDate;
     private Date endDate;
-    private boolean isActive;
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "discount")
     private List<DiscountProduct> applyProducts;
 
