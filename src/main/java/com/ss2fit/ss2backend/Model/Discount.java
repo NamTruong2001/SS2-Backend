@@ -1,6 +1,9 @@
 package com.ss2fit.ss2backend.Model;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -19,8 +22,14 @@ Có nhiều cách để thực hiện:
 2.2.3, Nếu discount active thì apply giá cho bảng discount price trên product
 
  */
+
+/*
+
+ */
 @Entity
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class Discount {
     @Id
     private String code;
@@ -29,7 +38,5 @@ public class Discount {
     private Date createdDate;
     private Date startDate;
     private Date endDate;
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "discount")
-    private List<DiscountProduct> applyProducts;
 
 }
