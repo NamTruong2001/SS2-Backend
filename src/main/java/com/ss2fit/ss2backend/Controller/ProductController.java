@@ -68,6 +68,7 @@ public class ProductController {
         }
     }
 
+
     @GetMapping("/test")
     public List<Product> test() {
         List<Product> products = productRepository.findProductInDateRange(new Date());
@@ -88,7 +89,6 @@ public class ProductController {
     public String createProduct(@RequestHeader String host,
                                 @ModelAttribute CreateProductDTO createProductDTO,
                                 @RequestParam("images") MultipartFile[] multipartFile) {
-        System.out.println(multipartFile.length);
 
         List<String> imagesList = Arrays.stream(multipartFile).map(
                 file -> {
@@ -125,4 +125,5 @@ public class ProductController {
             return new ResponseEntity(e.getMessage(), HttpStatus.FORBIDDEN);
         }
     }
+
 }

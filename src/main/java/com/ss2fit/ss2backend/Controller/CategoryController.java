@@ -1,5 +1,6 @@
 package com.ss2fit.ss2backend.Controller;
 
+
 import com.ss2fit.ss2backend.Service.CategoryService;
 import com.ss2fit.ss2backend.utils.Exceptions.CategoryExistException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,4 +51,3 @@ public class CategoryController {
             return new ResponseEntity(e.getMessage(), HttpStatus.FORBIDDEN);
         }
     }
-}
