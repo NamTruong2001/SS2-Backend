@@ -79,17 +79,19 @@ public class ProductService {
                 imageURL -> {
                     ProductImage productImage = new ProductImage();
                     productImage.setImageURL(imageURL);
+                    //product.addProductImages(productImage);
                     return productImage;
                 }
         ).collect(Collectors.toList());
-
         product.setProductImages(productImages);
         productRepository.save(product);
     }
 
     private ProductDTO applyDiscountAndConvertToDTO(Product product) {
         ProductDTO productDTO = modelMapper.map(product, ProductDTO.class);
-        productDTO.setCategoryName(product.getCategory().getName());
+        productDTO.setCategoryName(
+                product.getCategory() == null ? null : product.getCategory().getName()
+        );
         productDTO.setProductImages(
                 product.getProductImages().stream().map(
                         productImage -> productImage.getImageURL()

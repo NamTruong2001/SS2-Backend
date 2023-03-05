@@ -34,6 +34,7 @@ public class ProductController {
     private FilesStorageService filesStorageService;
     @Autowired
     private DiscountService discountService;
+
     @GetMapping("/products")
     public List<ProductDTO> getAllProducts() {
         return productService.getAllProducts();
@@ -67,6 +68,23 @@ public class ProductController {
         }
     }
 
+
+    @GetMapping("/test")
+    public List<Product> test() {
+        List<Product> products = productRepository.findProductInDateRange(new Date());
+        products.stream().forEach(
+                product -> {
+                    product.getDiscountProducts().stream().forEach(
+                            discountProduct -> {
+                                discountProduct.setProduct(null);
+                            }
+                    );
+                    product.setCategory(null);
+                }
+        );
+        return products;
+    }
+
     @PostMapping("/create-product")
     public String createProduct(@RequestHeader String host,
                                 @ModelAttribute CreateProductDTO createProductDTO,
@@ -76,7 +94,7 @@ public class ProductController {
                 file -> {
                     try {
                         return host + filesStorageService.save(file);
-                    } catch (IOException e) {
+                    } catch (Exception e) {
                         throw new RuntimeException(e);
                     }
                 }
@@ -108,19 +126,4 @@ public class ProductController {
         }
     }
 
-    @GetMapping("/test")
-    public List<Product> test() {
-        List<Product> products = productRepository.findProductInDateRange(new Date());
-        products.stream().forEach(
-                product -> {
-                    product.getDiscountProducts().stream().forEach(
-                            discountProduct -> {
-                                discountProduct.setProduct(null);
-                            }
-                    );
-                    product.setCategory(null);
-                }
-        );
-        return products;
-    }
 }

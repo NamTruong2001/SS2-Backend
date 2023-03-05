@@ -1,6 +1,7 @@
 package com.ss2fit.ss2backend.Repository;
 
 import com.ss2fit.ss2backend.DTO.ProductDTO;
+import com.ss2fit.ss2backend.Model.Category;
 import com.ss2fit.ss2backend.Model.Product;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -20,6 +21,7 @@ public interface ProductRepository extends JpaRepository<Product, String> {
 //    @Query("select new com.ss2fit.ss2backend.DTO.ProductDTO(p.id, p.name, p.description, p.price, p.quantity, p.created_date, p.category.name) from Product p join p.discountProducts dp ")
 //    public List<ProductDTO> getAllProductsDTO2();
       List<Product> findProductsByCategoryName(String categoryName);
+      List<Product> findProductsByCategory(Category category);
       List<Product> findByIdIn(List<String> ids);
       void deleteById(String id);
       @Query("SELECT p FROM Product p " +
