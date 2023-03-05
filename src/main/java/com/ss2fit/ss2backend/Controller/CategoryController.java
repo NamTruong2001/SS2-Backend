@@ -30,7 +30,7 @@ public class CategoryController {
 
     @PutMapping("/update-category")
     public void updateCategory(@RequestParam("id") String id,
-                                         @RequestParam("newName") String newName) {
+                               @RequestParam("newName") String newName) {
         categoryService.updateCategory(id, newName);
     }
 
@@ -51,3 +51,4 @@ public class CategoryController {
             return new ResponseEntity(e.getMessage(), HttpStatus.FORBIDDEN);
         }
     }
+}
