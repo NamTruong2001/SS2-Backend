@@ -2,10 +2,8 @@ package com.ss2fit.ss2backend.Model;
 
 import lombok.Data;
 
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.Id;
+import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Data
@@ -15,6 +13,8 @@ public class Order {
     private double total_money;
     @Enumerated(EnumType.ORDINAL)
     private OrderStatus status;
+    @OneToMany(mappedBy = "order")
+    private List<OrderDetail> orderDetail;
     public enum OrderStatus {
         COMPLETE,
         REJECT
