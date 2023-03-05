@@ -15,4 +15,5 @@ import java.util.List;
 public interface CategoryRepository extends JpaRepository<Category, String> {
    boolean existsByName(String name);
    Category findByName(String name);
+   void deleteByName(String name);
 }
