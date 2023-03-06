@@ -3,6 +3,7 @@ package com.ss2fit.ss2backend.Model;
 import lombok.Data;
 
 import javax.persistence.*;
+import java.util.Date;
 
 @Entity
 @Data
@@ -14,4 +15,5 @@ public class User {
     private String firstName;
     private String lastName;
     private String password;
+    private Date createdDate;
 }
