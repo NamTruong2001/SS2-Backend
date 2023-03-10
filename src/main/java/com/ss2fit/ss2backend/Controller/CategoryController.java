@@ -24,7 +24,7 @@ public class CategoryController {
                     HttpStatus.CREATED
             );
         } catch (CategoryExistException ce) {
-            return new ResponseEntity(ce.getMessage(), HttpStatus.BAD_REQUEST);
+            return ResponseEntity.badRequest().body(ce.getMessage());
         }
     }
 

@@ -2,11 +2,14 @@ package com.ss2fit.ss2backend.Model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.ss2fit.ss2backend.DTO.DiscountDTO;
 import lombok.Data;
 import javax.persistence.*;
+import javax.validation.constraints.Min;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @Entity
 @Data
@@ -18,6 +21,7 @@ public class Product {
    @Lob
    private String description;
    private double price;
+   @Min(value = 0)
    private Integer quantity;
    @ManyToOne(fetch = FetchType.LAZY)
    @JoinColumn(name = "category_id")
@@ -38,6 +42,19 @@ public class Product {
 
    public void addProductImages(ProductImage productImage) {
       productImages.add(productImage);
+   }
+
+   public DiscountProduct getCurrentDiscountProduct() {
+      if (this.discountProducts.size() > 0) {
+         Date currentDate = new Date();
+         Optional<DiscountProduct> dp = this.discountProducts.stream().filter(
+                 discountProduct ->
+                    currentDate.after(discountProduct.getDiscount().getStartDate())
+                            && currentDate.before(discountProduct.getDiscount().getEndDate())
+         ).findFirst();
+         return dp.orElse(null);
+      }
+      return null;
    }
 
 }

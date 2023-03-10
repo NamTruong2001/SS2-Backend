@@ -21,7 +21,7 @@ public class OrderDetail {
     @JoinColumn(name = "product_id")
     private Product product;
     @ManyToOne
-    @JoinColumn(name = "discount_id")
-    private Discount discount;
+    @JoinColumn(name = "discount_product_id")
+    private DiscountProduct discountProduct;
     private int quantity;
 }

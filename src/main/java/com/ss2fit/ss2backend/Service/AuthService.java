@@ -33,4 +33,8 @@ public class AuthService {
                 ((CustomUserDetails) authentication.getPrincipal()).getUsername());
     }
 
+    public CustomUserDetails getCurrentUser() {
+        return (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    }
+
 }
