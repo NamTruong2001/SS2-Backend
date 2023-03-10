@@ -20,7 +20,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -46,7 +45,7 @@ public class ProductController {
     @GetMapping("/get-product/{id}")
     public ResponseEntity getProduct(@PathVariable(name = "id") String id) {
         try {
-            ProductDTO product = productService.getProduct(id);
+            ProductDTO product = productService.getProductDTO(id);
             return new ResponseEntity<>(
                     product, HttpStatus.OK
             );

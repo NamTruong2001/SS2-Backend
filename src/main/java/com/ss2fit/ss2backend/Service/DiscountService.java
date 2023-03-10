@@ -52,7 +52,7 @@ public class DiscountService {
 
     }
 
-    private double calculateDiscount(Double productPrice, double discountPercent) {
+    public double calculateDiscount(Double productPrice, double discountPercent) {
         return productPrice - ((discountPercent / 100) * productPrice);
     }
 

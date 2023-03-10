@@ -34,7 +34,7 @@ public class ProductService {
         this.modelMapper = modelMapper;
     }
 
-    public ProductDTO getProduct(String id) throws ProductNotFoundException {
+    public ProductDTO getProductDTO(String id) throws ProductNotFoundException {
         Optional<Product> product = productRepository.findById(id);
         if (product.isPresent()) {
             return applyDiscountAndConvertToDTO(product.get());
@@ -43,14 +43,14 @@ public class ProductService {
         }
     }
 
+    public Product getProduct(String id) {
+       return productRepository.findById(id).orElseThrow(() -> new RuntimeException("Product Not Found"));
+    }
+
     public List<ProductDTO> getProductsByCategoryName(String categoryName) throws CategoryNotFoundException {
         Optional<List<Product>> products = Optional.of(productRepository.findProductsByCategoryName(categoryName));
-        if (products.isPresent()) {
-            return products.get().stream().
-                    map(this::applyDiscountAndConvertToDTO).collect(Collectors.toList());
-        } else {
-            throw new CategoryNotFoundException("Category Not Found");
-        }
+        return products.get().stream().
+                map(this::applyDiscountAndConvertToDTO).collect(Collectors.toList());
     }
 
     public List<ProductDTO> getAllProducts() {
@@ -99,10 +99,6 @@ public class ProductService {
         );
         if (product.getDiscountProducts().size() > 0) {
             Date currentDate = new Date();
-//            List<DiscountProduct> satisfyDiscountProducts =  product.getDiscountProducts().stream().filter(
-//                    discountProduct -> currentDate.after(discountProduct.getDiscount().getStartDate())
-//                            && currentDate.before(discountProduct.getDiscount().getEndDate())
-//            ).collect(Collectors.toList());
             for (DiscountProduct discountProduct : product.getDiscountProducts()) {
                 Discount discount = discountProduct.getDiscount();
                 if (currentDate.after(discount.getStartDate()) && currentDate.before(discount.getEndDate())) {
@@ -115,13 +111,6 @@ public class ProductService {
                     productDTO.setDiscountDTO(discountDTO);
                 }
             }
-//            productDTO.setDiscountPrice(
-//                    satisfyDiscountProducts.get(0).getDiscountPrice()
-//            );
-//            DiscountDTO discountDTO = modelMapper.map(satisfyDiscountProducts.get(0), DiscountDTO.class);
-//            discountDTO.setStartDate(discount.getStartDate().toString());
-//            discountDTO.setEndDate(discount.getEndDate().toString());
-//            productDTO.setDiscountDTO(discountDTO);
         }
         return productDTO;
     }

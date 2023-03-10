@@ -1,6 +1,5 @@
 package com.ss2fit.ss2backend.Config.jwt;
 
-import com.ss2fit.ss2backend.Model.CustomUserDetails;
 import com.ss2fit.ss2backend.Service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -16,6 +15,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 @Component
 public class JwtRequestFilter extends OncePerRequestFilter {
@@ -39,9 +39,11 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             }
             if (userDetails != null) {
                 UsernamePasswordAuthenticationToken
-                        authentication = new UsernamePasswordAuthenticationToken(userDetails,
+                        authentication = new UsernamePasswordAuthenticationToken(
+                                userDetails,
                         null,
                         userDetails.getAuthorities());
+
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
                 SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -57,4 +59,5 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         }
         return null;
     }
+
 }
