@@ -2,7 +2,9 @@ package com.ss2fit.ss2backend.Service;
 
 import com.ss2fit.ss2backend.DTO.RegisterRequest;
 import com.ss2fit.ss2backend.Model.CustomUserDetails;
+import com.ss2fit.ss2backend.Model.Role;
 import com.ss2fit.ss2backend.Model.User;
+import com.ss2fit.ss2backend.Repository.RoleRepository;
 import com.ss2fit.ss2backend.Repository.UserRepository;
 import com.ss2fit.ss2backend.utils.GenerateRandomString;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +16,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 public class UserService implements UserDetailsService {
@@ -22,6 +26,8 @@ public class UserService implements UserDetailsService {
     private UserRepository userRepository;
     @Autowired
     private PasswordEncoder passwordEncoder;
+    @Autowired
+    private RoleRepository roleRepository;
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userRepository.findUserByUsername(username);
@@ -40,7 +46,7 @@ public class UserService implements UserDetailsService {
         return new CustomUserDetails(user.get());
     }
 
-    public void register(RegisterRequest registerRequest) {
+    public void registerUser(RegisterRequest registerRequest) {
         User user = new User();
         user.setUsername(registerRequest.getUsername());
         user.setFirstName(registerRequest.getFirstName());
@@ -48,6 +54,7 @@ public class UserService implements UserDetailsService {
         user.setLastName(registerRequest.getLastName());
         user.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
         user.setCreatedDate(new Date());
+        user.setRoles(Set.of(roleRepository.findById(1).get()));
 
         userRepository.save(user);
     }

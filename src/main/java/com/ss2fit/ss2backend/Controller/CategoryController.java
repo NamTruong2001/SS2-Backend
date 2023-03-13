@@ -6,6 +6,7 @@ import com.ss2fit.ss2backend.utils.Exceptions.CategoryExistException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,6 +17,7 @@ public class CategoryController {
     @Autowired
     public CategoryService categoryService;
 
+    @PreAuthorize("isAuthenticated() and hasAnyAuthority('STAFF')")
     @PostMapping("/create-category")
     public ResponseEntity newCategory(@RequestParam("name") String name) {
         try {
@@ -28,6 +30,7 @@ public class CategoryController {
         }
     }
 
+    @PreAuthorize("isAuthenticated() and hasAnyAuthority('STAFF')")
     @PutMapping("/update-category")
     public void updateCategory(@RequestParam("id") String id,
                                @RequestParam("newName") String newName) {
@@ -42,6 +45,7 @@ public class CategoryController {
         );
     }
 
+    @PreAuthorize("isAuthenticated() and hasAnyAuthority('STAFF')")
     @DeleteMapping("/delete-category")
     public ResponseEntity deleteCategory(@RequestParam("categoryName") String categoryName) {
         try {

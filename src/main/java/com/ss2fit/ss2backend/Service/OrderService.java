@@ -6,8 +6,12 @@ import com.ss2fit.ss2backend.Repository.OrderRepository;
 import com.ss2fit.ss2backend.utils.GenerateRandomString;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-
+import com.ss2fit.ss2backend.DTO.ItemPage;
 import javax.transaction.Transactional;
 import java.util.Date;
 import java.util.List;
@@ -33,7 +37,7 @@ public class OrderService {
                 .map(cartItem -> {
                             Product product = productService.getProduct(cartItem.getProductId());
                             OrderDetail orderDetail = new OrderDetail();
-                            orderDetail.setDiscountProduct(product.getCurrentDiscountProduct());
+                            orderDetail.setDiscountProduct(product.takeCurrentDiscountProduct());
                             orderDetail.setProduct(product);
                             orderDetail.setQuantity(cartItem.getQuantity());
                             orderDetail.setOrder(order);
@@ -56,18 +60,36 @@ public class OrderService {
         orderRepository.save(order);
     }
 
-    public List<OrderDTO> getUserOrders() {
-        List<Order> orders = orderRepository.findAllByUser(
-                authService.getCurrentUser().getUser()
-        );
+    public ItemPage<OrderDTO> getUserOrders(int page, int size, String sortOption, String sortOrder) {
+        Pageable pageable = null;
+        if (sortOrder.equals("asc")) {
+            pageable = PageRequest.of(page, size, Sort.by(sortOption).ascending());
+        } else {
+            pageable = PageRequest.of(page, size, Sort.by(sortOption).descending());
+        }
 
-        return orders.stream().map(this::convertOrderToDTO).collect(Collectors.toList());
+        Page<Order> ordersPage = orderRepository.findAllByUserId(
+                authService.getCurrentUser().getUser().getId(),
+                pageable
+        );
+        List<OrderDTO> orderDTOList = ordersPage.getContent()
+                .stream().map(this::convertOrderToDTO).collect(Collectors.toList());
+
+        ItemPage<OrderDTO> dtoPage = new ItemPage<>();
+        dtoPage.setPageItems(orderDTOList);
+        dtoPage.setCurrentPage(ordersPage.getNumber());
+        dtoPage.setTotalItems((int) ordersPage.getTotalElements());
+        dtoPage.setTotalPages(ordersPage.getTotalPages());
+
+
+        return dtoPage;
     }
 
     public OrderDTO convertOrderToDTO(Order order) {
         OrderDTO orderDTO = new OrderDTO();
         orderDTO.setTotalPrice(order.getTotalMoney());
         orderDTO.setStatus(order.getStatus().getCode());
+        orderDTO.setCreatedDate(order.getCreatedDate());
         List<OrderItemDTO> orderItemDTOS = order.getOrderDetail().stream()
                 .map(orderDetail -> {
                     OrderItemDTO orderItemDTO = new OrderItemDTO();
