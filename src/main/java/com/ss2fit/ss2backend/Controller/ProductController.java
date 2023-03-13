@@ -11,6 +11,7 @@ import com.ss2fit.ss2backend.Service.ProductService;
 import com.ss2fit.ss2backend.utils.Exceptions.CategoryNotFoundException;
 import com.ss2fit.ss2backend.utils.Exceptions.ProductNotFoundException;
 import io.github.classgraph.Resource;
+import netscape.javascript.JSObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpHeaders;
@@ -70,23 +71,27 @@ public class ProductController {
         }
     }
 
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("isAuthenticated() and hasAnyAuthority('STAFF', 'ADMIN')")
     @GetMapping("/test")
     public List<Product> test() {
         List<Product> products = productRepository.findProductInDateRange(new Date());
-        products.stream().forEach(
-                product -> {
-                    product.getDiscountProducts().stream().forEach(
-                            discountProduct -> {
-                                discountProduct.setProduct(null);
-                            }
-                    );
-                    product.setCategory(null);
-                }
-        );
+
         return products;
+//        products.stream().forEach(
+//                product -> {
+//                    product.getDiscountProducts().stream().forEach(
+//                            discountProduct -> {
+//                                discountProduct.setProduct(null);
+//                            }
+//                    );
+//                    product.setCategory(null);
+//                }
+//        );
+//        return products;
     }
 
+
+    @PreAuthorize("isAuthenticated() and hasAnyAuthority('STAFF')")
     @PostMapping("/create-product")
     public String createProduct(@RequestHeader String host,
                                 @ModelAttribute CreateProductDTO createProductDTO,
@@ -105,6 +110,7 @@ public class ProductController {
         return "OK";
     }
 
+    @PreAuthorize("isAuthenticated() and hasAnyAuthority('STAFF')")
     @PostMapping("/apply-discount")
     public ResponseEntity createAndApplyDiscount(@RequestBody CreateDiscountDTO createDiscountDTO) {
         try {
@@ -116,6 +122,7 @@ public class ProductController {
         }
     }
 
+    @PreAuthorize("isAuthenticated() and hasAnyAuthority('STAFF')")
     @PostMapping("/delete-product")
     public ResponseEntity deleteProduct(@RequestParam("productId") String productId) {
         try {

@@ -23,6 +23,7 @@ public class JwtTokenProvider {
 
         Map<String, Object> claims = new HashMap<>();
         claims.put("username", userDetails.getUsername());
+        claims.put("role", userDetails.getAuthorities().toArray());
 
         return Jwts.builder()
                    .setSubject(userDetails.getUser().getId())

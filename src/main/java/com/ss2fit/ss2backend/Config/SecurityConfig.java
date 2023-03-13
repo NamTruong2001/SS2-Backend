@@ -36,6 +36,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     AuthenticationEntryPoint authenticationEntryPoint;
     @Autowired
     PasswordEncoder passwordEncoder;
+    @Autowired
+    CustomAccessDeniedHandler customAccessDeniedHandler;
 
     @Bean(BeanIds.AUTHENTICATION_MANAGER)
     @Override
@@ -75,6 +77,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .csrf().disable()
                 .exceptionHandling()
                 .authenticationEntryPoint(authenticationEntryPoint)
+                .accessDeniedHandler(customAccessDeniedHandler)
                 .and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 

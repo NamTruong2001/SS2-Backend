@@ -10,6 +10,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -23,5 +24,6 @@ public class OrderDTO {
     private List<OrderItemDTO> orderItemDTOS = new ArrayList<>();
     private Double totalPrice;
     private String status;
+    private Date createdDate;
     
 }

@@ -31,7 +31,7 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity register(@Valid @RequestBody RegisterRequest registerRequest) {
         try {
-            userService.register(registerRequest);
+            userService.registerUser(registerRequest);
             return new ResponseEntity("Register successfully", HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity(e.getMessage(), HttpStatus.BAD_REQUEST);

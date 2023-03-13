@@ -23,8 +23,8 @@ public class Order {
     private Date createdDate;
 
     public enum OrderStatus {
-        COMPLETE("C"), REJECT("R"),
-        PENDING("P");
+        COMPLETE("COMPLETE"), REJECT("REJECT"),
+        PENDING("PENDING");
 
         private String code;
 

@@ -1,8 +1,6 @@
 package com.ss2fit.ss2backend.Model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.ss2fit.ss2backend.DTO.DiscountDTO;
 import lombok.Data;
 import javax.persistence.*;
 import javax.validation.constraints.Min;
@@ -44,7 +42,7 @@ public class Product {
       productImages.add(productImage);
    }
 
-   public DiscountProduct getCurrentDiscountProduct() {
+   public DiscountProduct takeCurrentDiscountProduct() {
       if (this.discountProducts.size() > 0) {
          Date currentDate = new Date();
          Optional<DiscountProduct> dp = this.discountProducts.stream().filter(
