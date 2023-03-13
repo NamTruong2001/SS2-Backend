@@ -2,6 +2,7 @@ package com.ss2fit.ss2backend.Service;
 
 import com.ss2fit.ss2backend.DTO.CreateProductDTO;
 import com.ss2fit.ss2backend.DTO.DiscountDTO;
+import com.ss2fit.ss2backend.DTO.ItemPage;
 import com.ss2fit.ss2backend.DTO.ProductDTO;
 import com.ss2fit.ss2backend.Model.*;
 import com.ss2fit.ss2backend.Repository.CategoryRepository;
@@ -10,7 +11,10 @@ import com.ss2fit.ss2backend.Repository.ProductRepository;
 import com.ss2fit.ss2backend.utils.Exceptions.CategoryNotFoundException;
 import com.ss2fit.ss2backend.utils.Exceptions.ProductNotFoundException;
 import com.ss2fit.ss2backend.utils.GenerateRandomString;
+import com.ss2fit.ss2backend.utils.PageableObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.modelmapper.ModelMapper;
 
@@ -53,11 +57,19 @@ public class ProductService {
                 map(this::applyDiscountAndConvertToDTO).collect(Collectors.toList());
     }
 
-    public List<ProductDTO> getAllProducts() {
-        List<ProductDTO> productDTOList = productRepository.findAll().stream().
+    public ItemPage<ProductDTO> getAllProducts(int page, int size, String sortOption, String sortOrder) {
+        Pageable pageable = PageableObject.getPage(page, size, sortOption, sortOrder);
+
+        Page<Product> productsPage = productRepository.findAll(pageable);
+        List<ProductDTO> productDTOList = productsPage.getContent().stream().
                 map(this::applyDiscountAndConvertToDTO).collect(Collectors.toList());
 
-        return productDTOList;
+        return paginate(
+                productsPage.getNumber(),
+                productsPage.getTotalElements(),
+                productsPage.getTotalPages(),
+                productDTOList
+        );
     }
 
     public void createProduct(CreateProductDTO productDTO, List<String> imageURLs) {
@@ -71,7 +83,7 @@ public class ProductService {
         }
         Product product = modelMapper.map(productDTO, Product.class);
         product.setId(GenerateRandomString.generate());
-        product.setCreated_date(new Date());
+        product.setCreatedDate(new Date());
         product.setCategory(
                 categoryRepository.findByName(productDTO.getCategoryName())
         );
@@ -117,6 +129,16 @@ public class ProductService {
 
     public void deleteProduct(String id) {
         productRepository.deleteById(id);
+    }
+
+    private ItemPage<ProductDTO> paginate(int curr, long totalItems, int totalPages, List<ProductDTO> productDTOList) {
+        ItemPage<ProductDTO> productDTOItemPage = new ItemPage<>();
+        productDTOItemPage.setCurrentPage(curr);
+        productDTOItemPage.setTotalItems(totalItems);
+        productDTOItemPage.setTotalPages(totalPages);
+        productDTOItemPage.setPageItems(productDTOList);
+
+        return productDTOItemPage;
     }
 
 }
