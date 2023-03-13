@@ -30,7 +30,7 @@ public class Product {
    @OneToMany(mappedBy = "product")
    @JsonManagedReference
    private List<DiscountProduct> discountProducts;
-   private Date created_date;
+   private Date createdDate;
 
    @PreRemove
    private void preRemove() {

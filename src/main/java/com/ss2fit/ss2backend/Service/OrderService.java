@@ -78,7 +78,7 @@ public class OrderService {
         ItemPage<OrderDTO> dtoPage = new ItemPage<>();
         dtoPage.setPageItems(orderDTOList);
         dtoPage.setCurrentPage(ordersPage.getNumber());
-        dtoPage.setTotalItems((int) ordersPage.getTotalElements());
+        dtoPage.setTotalItems(ordersPage.getTotalElements());
         dtoPage.setTotalPages(ordersPage.getTotalPages());
 
 

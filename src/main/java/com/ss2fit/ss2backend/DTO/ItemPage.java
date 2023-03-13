@@ -13,6 +13,6 @@ import java.util.List;
 public class ItemPage<T> {
     private List<T> pageItems;
     private Integer currentPage;
-    private Integer totalItems;
+    private Long totalItems;
     private Integer totalPages;
 }

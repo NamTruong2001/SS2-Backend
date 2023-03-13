@@ -2,6 +2,7 @@ package com.ss2fit.ss2backend.Controller;
 
 import com.ss2fit.ss2backend.DTO.CreateDiscountDTO;
 import com.ss2fit.ss2backend.DTO.CreateProductDTO;
+import com.ss2fit.ss2backend.DTO.ItemPage;
 import com.ss2fit.ss2backend.DTO.ProductDTO;
 import com.ss2fit.ss2backend.Model.Product;
 import com.ss2fit.ss2backend.Repository.ProductRepository;
@@ -39,8 +40,11 @@ public class ProductController {
     private DiscountService discountService;
 
     @GetMapping("/products")
-    public List<ProductDTO> getAllProducts() {
-        return productService.getAllProducts();
+    public ItemPage<ProductDTO> getAllProducts(@RequestParam(defaultValue = "0") Integer page,
+                                               @RequestParam(defaultValue = "10") Integer size,
+                                               @RequestParam(defaultValue = "createdDate") String sort,
+                                               @RequestParam(defaultValue = "desc") String sortOrder) {
+        return productService.getAllProducts(page, size, sort, sortOrder);
     }
 
     @GetMapping("/get-product/{id}")
