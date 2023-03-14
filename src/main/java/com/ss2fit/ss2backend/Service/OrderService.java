@@ -4,12 +4,14 @@ import com.ss2fit.ss2backend.DTO.*;
 import com.ss2fit.ss2backend.Model.*;
 import com.ss2fit.ss2backend.Repository.OrderRepository;
 import com.ss2fit.ss2backend.utils.GenerateRandomString;
+import com.ss2fit.ss2backend.utils.PageableObject;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import com.ss2fit.ss2backend.DTO.ItemPage;
 import javax.transaction.Transactional;
@@ -85,6 +87,21 @@ public class OrderService {
         return dtoPage;
     }
 
+    public ItemPage<OrderDTO> getOrdersAdmin(int page, int size, String sortOption, String sortOrder) {
+        Pageable pageable = PageableObject.getPage(page, size, sortOption, sortOrder);
+        Page<Order> orderPage =  orderRepository.findAll(pageable);
+
+        ItemPage<OrderDTO> dtoPage = new ItemPage<>();
+        dtoPage.setPageItems(orderPage.stream()
+                .map(this::convertOrderToDTO).collect(Collectors.toList()));
+        dtoPage.setCurrentPage(orderPage.getNumber());
+        dtoPage.setTotalItems(orderPage.getTotalElements());
+        dtoPage.setTotalPages(orderPage.getTotalPages());
+
+
+        return dtoPage;
+    }
+
     public OrderDTO convertOrderToDTO(Order order) {
         OrderDTO orderDTO = new OrderDTO();
         orderDTO.setTotalPrice(order.getTotalMoney());
@@ -120,5 +137,10 @@ public class OrderService {
                 }).collect(Collectors.toList());
         orderDTO.setOrderItemDTOS(orderItemDTOS);
         return orderDTO;
+    }
+
+    public Page<OrderDTO> searchOrder(String keyword) {
+        Specification<Order> orderSpecification = Specification.where(null);
+        return null;
     }
 }

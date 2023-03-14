@@ -127,6 +127,11 @@ public class ProductService {
         return productDTO;
     }
 
+    public List<ProductDTO> getDiscountProduct() {
+        return productRepository.findProductsCurrentlyDiscount().stream()
+                .map(this::applyDiscountAndConvertToDTO).collect(Collectors.toList());
+    }
+
     public void deleteProduct(String id) {
         productRepository.deleteById(id);
     }
