@@ -38,4 +38,18 @@ public class OrderController {
        ItemPage<OrderDTO> dtoPage = orderService.getUserOrders(page, size, sort, sortOrder);
        return ResponseEntity.ok().body(dtoPage);
     }
+
+    @GetMapping("/admin-orders")
+    @PreAuthorize("isAuthenticated() and hasAnyAuthority('STAFF', 'ADMIN')")
+    public ResponseEntity getOrdersAdmin(
+            @RequestParam(defaultValue = "0") Integer page,
+            @RequestParam(defaultValue = "10") Integer size,
+            @RequestParam(defaultValue = "createdDate") String sortBy,
+            @RequestParam(defaultValue = "desc") String sortOrder,
+            @RequestParam(required = false) String field,
+            @RequestParam(required = false) String q
+    ) {
+        ItemPage<OrderDTO> dtoItemPage = orderService.getOrdersAdmin(page, size, sortBy, sortOrder);
+        return ResponseEntity.ok().body(dtoItemPage);
+    }
 }

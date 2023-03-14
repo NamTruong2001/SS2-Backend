@@ -139,12 +139,26 @@ public class ProductController {
         }
     }
 
+    @GetMapping("/discount-product")
+    public ResponseEntity getDiscountProduct() {
+        return ResponseEntity.ok().body(
+                productService.getDiscountProduct()
+        );
+    }
+
     @GetMapping("/images/{filename:.+}")
     @ResponseBody
     public ResponseEntity<Resource> getFile(@PathVariable String filename) {
         Resource file = (Resource) filesStorageService.load(filename);
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getURL().getFile() + "\"").body(file);
+    }
+
+    @GetMapping("/products-field")
+    public ResponseEntity getProductFieldsToQuery() {
+     return ResponseEntity.ok().body(
+             List.of("createdDate", "price", "name", "quantity")
+     );
     }
 
 }

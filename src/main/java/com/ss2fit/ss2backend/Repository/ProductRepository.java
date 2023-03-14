@@ -31,5 +31,11 @@ public interface ProductRepository extends JpaRepository<Product, String> {
               "where (CURDATE() > pd.discount.startDate AND CURDATE() < pd.discount.endDate) OR d.code is null")
       List<Product> findProductInDateRange(@Param("currentDate") Date date);
 
+      @Query("SELECT p FROM Product p " +
+              "left join p.discountProducts pd " +
+              "left join Discount d on pd.discount.code = d.code " +
+              "where CURDATE() >= pd.discount.startDate AND CURDATE() <= pd.discount.endDate")
+      List<Product> findProductsCurrentlyDiscount();
+
 
 }
