@@ -12,7 +12,6 @@ import com.ss2fit.ss2backend.Service.ProductService;
 import com.ss2fit.ss2backend.utils.Exceptions.CategoryNotFoundException;
 import com.ss2fit.ss2backend.utils.Exceptions.ProductNotFoundException;
 import io.github.classgraph.Resource;
-import netscape.javascript.JSObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpHeaders;
@@ -29,6 +28,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/product/")
+@CrossOrigin("*")
 public class ProductController {
     @Autowired
     private ProductService productService;
@@ -47,7 +47,7 @@ public class ProductController {
         return productService.getAllProducts(page, size, sort, sortOrder);
     }
 
-    @GetMapping("/get-product/{id}")
+    @GetMapping("/get/{id}")
     public ResponseEntity getProduct(@PathVariable(name = "id") String id) {
         try {
             ProductDTO product = productService.getProductDTO(id);
@@ -61,7 +61,7 @@ public class ProductController {
         }
     }
 
-    @GetMapping("/get-product-by-category/{categoryName}")
+    @GetMapping("/by-category/{categoryName}")
     public ResponseEntity getProductByCategory(@PathVariable(name = "categoryName") String categoryName) {
         try {
             List<ProductDTO> productDTOList = productService.getProductsByCategoryName(categoryName);
@@ -69,9 +69,9 @@ public class ProductController {
                     productDTOList, HttpStatus.OK
             );
         } catch (CategoryNotFoundException e) {
-            return new ResponseEntity("Category Not Found", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>("Category Not Found", HttpStatus.NOT_FOUND);
         } catch (Exception e) {
-            return new ResponseEntity(e.getMessage(), HttpStatus.FORBIDDEN);
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.FORBIDDEN);
         }
     }
 
@@ -116,7 +116,7 @@ public class ProductController {
 
     @PreAuthorize("isAuthenticated() and hasAnyAuthority('STAFF')")
     @PostMapping("/apply-discount")
-    public ResponseEntity createAndApplyDiscount(@RequestBody CreateDiscountDTO createDiscountDTO) {
+    public ResponseEntity<String> createAndApplyDiscount(@RequestBody CreateDiscountDTO createDiscountDTO) {
         try {
             discountService.createAndApplyDiscount(createDiscountDTO.getDiscountDTO(), createDiscountDTO.getProductIds());
 
@@ -140,7 +140,7 @@ public class ProductController {
     }
 
     @GetMapping("/discount-product")
-    public ResponseEntity getDiscountProduct() {
+    public ResponseEntity<List<ProductDTO>> getDiscountProduct() {
         return ResponseEntity.ok().body(
                 productService.getDiscountProduct()
         );
@@ -155,7 +155,7 @@ public class ProductController {
     }
 
     @GetMapping("/products-field")
-    public ResponseEntity getProductFieldsToQuery() {
+    public ResponseEntity<List<String>> getProductFieldsToQuery() {
      return ResponseEntity.ok().body(
              List.of("createdDate", "price", "name", "quantity")
      );

@@ -6,6 +6,7 @@ import com.ss2fit.ss2backend.DTO.ItemPage;
 import com.ss2fit.ss2backend.DTO.ProductDTO;
 import com.ss2fit.ss2backend.Model.*;
 import com.ss2fit.ss2backend.Repository.CategoryRepository;
+import com.ss2fit.ss2backend.Repository.OrderRepository;
 import com.ss2fit.ss2backend.Repository.ProductImageRepository;
 import com.ss2fit.ss2backend.Repository.ProductRepository;
 import com.ss2fit.ss2backend.utils.Exceptions.CategoryNotFoundException;
@@ -29,13 +30,17 @@ public class ProductService {
     private final ProductRepository productRepository;
     private final ModelMapper modelMapper;
     private final CategoryRepository categoryRepository;
+    private final OrderRepository orderRepository;
 
     @Autowired
     public ProductService(ProductRepository productRepository, CategoryRepository categoryRepository,
-                          ModelMapper modelMapper, ProductImageRepository productImageRepository) {
+                          ModelMapper modelMapper,
+                          ProductImageRepository productImageRepository,
+                          OrderRepository orderRepository) {
         this.productRepository = productRepository;
         this.categoryRepository = categoryRepository;
         this.modelMapper = modelMapper;
+        this.orderRepository = orderRepository;
     }
 
     public ProductDTO getProductDTO(String id) throws ProductNotFoundException {
@@ -134,6 +139,7 @@ public class ProductService {
 
     public void deleteProduct(String id) {
         productRepository.deleteById(id);
+
     }
 
     private ItemPage<ProductDTO> paginate(int curr, long totalItems, int totalPages, List<ProductDTO> productDTOList) {

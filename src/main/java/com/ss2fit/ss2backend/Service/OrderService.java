@@ -3,6 +3,8 @@ package com.ss2fit.ss2backend.Service;
 import com.ss2fit.ss2backend.DTO.*;
 import com.ss2fit.ss2backend.Model.*;
 import com.ss2fit.ss2backend.Repository.OrderRepository;
+import com.ss2fit.ss2backend.Repository.ProductRepository;
+import com.ss2fit.ss2backend.utils.Exceptions.OrderNotFoundException;
 import com.ss2fit.ss2backend.utils.GenerateRandomString;
 import com.ss2fit.ss2backend.utils.PageableObject;
 import org.modelmapper.ModelMapper;
@@ -14,15 +16,20 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import com.ss2fit.ss2backend.DTO.ItemPage;
+
 import javax.transaction.Transactional;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
 public class OrderService {
     @Autowired
     private OrderRepository orderRepository;
+    @Autowired
+    private ProductRepository productRepository;
     @Autowired
     private ProductService productService;
     @Autowired
@@ -33,11 +40,13 @@ public class OrderService {
     private ModelMapper modelMapper;
 
     @Transactional
-    public void makeOrder(List<CartItem> cartItems) {
+    public String makeOrder(List<CartItem> cartItems) {
         Order order = new Order();
         List<OrderDetail> orderDetails = cartItems.stream()
                 .map(cartItem -> {
                             Product product = productService.getProduct(cartItem.getProductId());
+                            product.setQuantity(product.getQuantity() - cartItem.getQuantity());
+                            productRepository.save(product);
                             OrderDetail orderDetail = new OrderDetail();
                             orderDetail.setDiscountProduct(product.takeCurrentDiscountProduct());
                             orderDetail.setProduct(product);
@@ -53,13 +62,23 @@ public class OrderService {
                 return orderDetail.getDiscountProduct().getDiscountPrice() * orderDetail.getQuantity();
             }
         }).reduce(0.0, Double::sum);
+        OrderHistory orderHistory = OrderHistory
+                .builder()
+                .user(authService.getCurrentUser().getUser())
+                .historyOrderStatus(Order.OrderStatus.PENDING)
+                .date(new Date())
+                .info("Nguời dùng đặt hàng thành công")
+                .order(order).build();
+
         order.setOrderDetail(orderDetails);
         order.setTotalMoney(totalMoney);
         order.setStatus(Order.OrderStatus.PENDING);
         order.setId(GenerateRandomString.generate());
         order.setUser(authService.getCurrentUser().getUser());
         order.setCreatedDate(new Date());
-        orderRepository.save(order);
+        order.addOrderHistory(orderHistory); //add order history
+        Order savedOrder = orderRepository.save(order);
+        return savedOrder.getId();
     }
 
     public ItemPage<OrderDTO> getUserOrders(int page, int size, String sortOption, String sortOrder) {
@@ -89,7 +108,7 @@ public class OrderService {
 
     public ItemPage<OrderDTO> getOrdersAdmin(int page, int size, String sortOption, String sortOrder) {
         Pageable pageable = PageableObject.getPage(page, size, sortOption, sortOrder);
-        Page<Order> orderPage =  orderRepository.findAll(pageable);
+        Page<Order> orderPage = orderRepository.findAll(pageable);
 
         ItemPage<OrderDTO> dtoPage = new ItemPage<>();
         dtoPage.setPageItems(orderPage.stream()
@@ -142,5 +161,115 @@ public class OrderService {
     public Page<OrderDTO> searchOrder(String keyword) {
         Specification<Order> orderSpecification = Specification.where(null);
         return null;
+    }
+
+    public OrderDTO setOrderStatusToDelevering(String orderId, String comment) throws OrderNotFoundException {
+        Optional<Order> orderOptional = orderRepository.findById(orderId);
+        if (orderOptional.isPresent()) {
+            Order order = orderOptional.get();
+            order.setStatus(Order.OrderStatus.DELIVERING);
+            OrderHistory orderHistory = OrderHistory
+                    .builder()
+                    .user(authService.getCurrentUser().getUser())
+                    .historyOrderStatus(Order.OrderStatus.DELIVERING)
+                    .date(new Date())
+                    .info(comment)
+                    .order(order).build();
+            orderHistory.setOrder(order);
+            order.addOrderHistory(orderHistory);
+            orderRepository.save(order);
+            return convertOrderToDTO(order);
+        } else {
+            throw new OrderNotFoundException("order not Found");
+        }
+    }
+
+    @Transactional
+    public OrderDTO setOrderStatusToCancel(String orderId, String comment) throws OrderNotFoundException {
+        Optional<Order> orderOptional = orderRepository.findOrderByIdAndUser_Id(orderId,
+                authService.getCurrentUser().getUser().getId());
+
+        if (orderOptional.isPresent()) {
+            Order order = orderOptional.get();
+            order.setStatus(Order.OrderStatus.CANCEL);
+            order.getOrderDetail().stream()
+                    .forEach(orderDetail -> {
+                        Product product = orderDetail.getProduct();
+                        product.setQuantity(product.getQuantity() + orderDetail.getQuantity());
+                        productRepository.save(product);
+                    });
+            User user = authService.getCurrentUser().getUser();
+            OrderHistory orderHistory = OrderHistory
+                    .builder()
+                    .user(user)
+                    .historyOrderStatus(Order.OrderStatus.CANCEL)
+                    .date(new Date())
+                    .info(comment)
+                    .order(order).build();
+            order.addOrderHistory(orderHistory);
+            orderRepository.save(order);
+            return convertOrderToDTO(order);
+        } else {
+            throw new OrderNotFoundException("Order not Found");
+        }
+    }
+
+    @Transactional
+    public OrderDTO setOrderStatusToCancelByAdmin(String orderId, String comment) throws OrderNotFoundException {
+        Optional<Order> orderOptional = orderRepository.findOrderByIdAndUser_Id(orderId,
+                authService.getCurrentUser().getUser().getId());
+
+        if (orderOptional.isPresent()) {
+            Order order = orderOptional.get();
+            order.setStatus(Order.OrderStatus.CANCEL);
+            order.getOrderDetail().stream()
+                    .forEach(orderDetail -> {
+                        Product product = orderDetail.getProduct();
+                        product.setQuantity(product.getQuantity() + orderDetail.getQuantity());
+                        productRepository.save(product);
+                    });
+            User user = authService.getCurrentUser().getUser();
+            OrderHistory orderHistory = OrderHistory
+                    .builder()
+                    .user(user)
+                    .historyOrderStatus(Order.OrderStatus.CANCEL)
+                    .date(new Date())
+                    .info(comment)
+                    .order(order).build();
+            order.addOrderHistory(orderHistory);
+            orderRepository.save(order);
+            return convertOrderToDTO(order);
+        } else {
+            throw new OrderNotFoundException("Order not Found");
+        }
+    }
+
+    public OrderDTO setOrderStatusToComplete(String orderId, String comment) throws OrderNotFoundException {
+        Optional<Order> orderOptional = orderRepository.findById(orderId);
+        if (orderOptional.isPresent()) {
+            Order order = orderOptional.get();
+            order.setStatus(Order.OrderStatus.COMPLETE);
+            OrderHistory orderHistory = OrderHistory
+                    .builder()
+                    .user(authService.getCurrentUser().getUser())
+                    .historyOrderStatus(Order.OrderStatus.COMPLETE)
+                    .date(new Date())
+                    .info(comment)
+                    .order(order).build();
+            order.addOrderHistory(orderHistory);
+            orderRepository.save(order);
+            return convertOrderToDTO(order);
+        } else {
+            throw new OrderNotFoundException("Order not Found");
+        }
+    }
+
+    public List<OrderHistory> getOrderHistory(String orderId) throws OrderNotFoundException {
+        Optional<Order> optionalOrder = orderRepository.findById(orderId);
+        if (optionalOrder.isPresent()) {
+            return optionalOrder.get().getOrderHistory();
+        } else {
+            throw new OrderNotFoundException("Order Not Found");
+        }
     }
 }
