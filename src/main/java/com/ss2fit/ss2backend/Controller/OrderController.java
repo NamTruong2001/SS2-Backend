@@ -48,9 +48,7 @@ public class OrderController {
             @RequestParam(defaultValue = "0") Integer page,
             @RequestParam(defaultValue = "10") Integer size,
             @RequestParam(defaultValue = "createdDate") String sortBy,
-            @RequestParam(defaultValue = "desc") String sortOrder,
-            @RequestParam(required = false) Optional<String[]> field,
-            @RequestParam(required = false) Optional<String> status
+            @RequestParam(defaultValue = "desc") String sortOrder
     ) {
         ItemPage<OrderDTO> dtoItemPage = orderService.getOrdersAdmin(page, size, sortBy, sortOrder);
         return ResponseEntity.ok().body(dtoItemPage);
