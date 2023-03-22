@@ -3,6 +3,7 @@ package com.ss2fit.ss2backend.Controller;
 import com.ss2fit.ss2backend.Service.RevenueService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -13,6 +14,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("api/revenue")
+@PreAuthorize("hasAnyAuthority('STAFF', 'ADMIN')")
 public class RevenueController {
     @Autowired
     RevenueService revenueService;
