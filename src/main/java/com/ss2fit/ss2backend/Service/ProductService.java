@@ -112,13 +112,13 @@ public class ProductService {
         productRepository.save(product);
     }
 
-    public void addImagesToProduct(String host, MultipartFile[] multipartFiles, String productId) throws ProductNotFoundException {
+    public void addImagesToProduct(MultipartFile[] multipartFiles, String productId) throws ProductNotFoundException {
         Optional<Product> productOptional = productRepository.findById(productId);
         Product product = productOptional.orElseThrow(() -> new ProductNotFoundException("Not Found"));
         Arrays.stream(multipartFiles).map(
                 file -> {
                     try {
-                        return host + filesStorageService.save(file);
+                        return filesStorageService.save(file);
                     } catch (IOException e) {
                         throw new UncheckedIOException(e);
                     }
