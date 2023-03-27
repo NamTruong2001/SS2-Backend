@@ -1,15 +1,13 @@
 package com.ss2fit.ss2backend.Service;
 
-import com.ss2fit.ss2backend.DTO.CreateProductDTO;
-import com.ss2fit.ss2backend.DTO.DiscountDTO;
-import com.ss2fit.ss2backend.DTO.ItemPage;
-import com.ss2fit.ss2backend.DTO.ProductDTO;
+import com.ss2fit.ss2backend.DTO.*;
 import com.ss2fit.ss2backend.Model.*;
 import com.ss2fit.ss2backend.Repository.CategoryRepository;
 import com.ss2fit.ss2backend.Repository.OrderRepository;
 import com.ss2fit.ss2backend.Repository.ProductImageRepository;
 import com.ss2fit.ss2backend.Repository.ProductRepository;
 import com.ss2fit.ss2backend.utils.Exceptions.CategoryNotFoundException;
+import com.ss2fit.ss2backend.utils.Exceptions.NotFoundException;
 import com.ss2fit.ss2backend.utils.Exceptions.ProductNotFoundException;
 import com.ss2fit.ss2backend.utils.GenerateRandomString;
 import com.ss2fit.ss2backend.utils.PageableObject;
@@ -18,7 +16,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.modelmapper.ModelMapper;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.transaction.Transactional;
+import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -31,6 +35,9 @@ public class ProductService {
     private final ModelMapper modelMapper;
     private final CategoryRepository categoryRepository;
     private final OrderRepository orderRepository;
+    private final ProductImageRepository productImageRepository;
+    @Autowired
+    private FilesStorageService filesStorageService;
 
     @Autowired
     public ProductService(ProductRepository productRepository, CategoryRepository categoryRepository,
@@ -41,6 +48,7 @@ public class ProductService {
         this.categoryRepository = categoryRepository;
         this.modelMapper = modelMapper;
         this.orderRepository = orderRepository;
+        this.productImageRepository = productImageRepository;
     }
 
     public ProductDTO getProductDTO(String id) throws ProductNotFoundException {
@@ -104,6 +112,37 @@ public class ProductService {
         productRepository.save(product);
     }
 
+    public void addImagesToProduct(String host, MultipartFile[] multipartFiles, String productId) throws ProductNotFoundException {
+        Optional<Product> productOptional = productRepository.findById(productId);
+        Product product = productOptional.orElseThrow(() -> new ProductNotFoundException("Not Found"));
+        Arrays.stream(multipartFiles).map(
+                file -> {
+                    try {
+                        return host + filesStorageService.save(file);
+                    } catch (IOException e) {
+                        throw new UncheckedIOException(e);
+                    }
+                }
+        ).map(imagesUrl -> {
+            ProductImage productImage = new ProductImage();
+            productImage.setImageURL(imagesUrl);
+            return productImage;
+        }).forEach(product::addProductImages);
+
+        productRepository.save(product);
+    }
+
+    @Transactional
+    public void removeImagesFromProduct(List<Long> imageIdList, String productId) throws NotFoundException, ProductNotFoundException {
+        Optional<Product> productOptional = productRepository.findById(productId);
+        Product product = productOptional.orElseThrow(() -> new ProductNotFoundException("Product Not Found"));
+        for (Long imageId : imageIdList) {
+            ProductImage productImage = productImageRepository.findById(imageId).orElseThrow(NotFoundException::new);
+            product.removeProductImages(productImage);
+        }
+        productRepository.save(product);
+    }
+
     private ProductDTO applyDiscountAndConvertToDTO(Product product) {
         ProductDTO productDTO = modelMapper.map(product, ProductDTO.class);
         productDTO.setCategoryName(
@@ -140,6 +179,30 @@ public class ProductService {
     public void deleteProduct(String id) {
         productRepository.deleteById(id);
 
+    }
+
+    public ProductDTO updateProduct(UpdateProductDTO updateProductDTO) throws ProductNotFoundException {
+        Optional<Product> optionalProduct = productRepository.findById(updateProductDTO.getId());
+        if (optionalProduct.isPresent()) {
+            Product product = optionalProduct.get();
+            product.setName(updateProductDTO.getName());
+            product.setQuantity(updateProductDTO.getQuantity());
+            product.setDescription(updateProductDTO.getDescription());
+            product.setPrice(updateProductDTO.getPrice());
+            if (!product.getCategory().getName().equals(updateProductDTO.getNewCategory())) {
+                if (categoryRepository.existsByName(updateProductDTO.getName())) {
+                    product.setCategory(
+                            categoryRepository.findByName(updateProductDTO.getName())
+                    );
+                } else {
+                    throw new CategoryNotFoundException("Category Not Found");
+                }
+            }
+            Product saved = productRepository.save(product);
+            return modelMapper.map(saved, ProductDTO.class);
+        } else {
+            throw new ProductNotFoundException("Product Not Found");
+        }
     }
 
     private ItemPage<ProductDTO> paginate(int curr, long totalItems, int totalPages, List<ProductDTO> productDTOList) {

@@ -1,9 +1,6 @@
 package com.ss2fit.ss2backend.Controller;
 
-import com.ss2fit.ss2backend.DTO.CreateDiscountDTO;
-import com.ss2fit.ss2backend.DTO.CreateProductDTO;
-import com.ss2fit.ss2backend.DTO.ItemPage;
-import com.ss2fit.ss2backend.DTO.ProductDTO;
+import com.ss2fit.ss2backend.DTO.*;
 import com.ss2fit.ss2backend.Model.Product;
 import com.ss2fit.ss2backend.Repository.ProductRepository;
 import com.ss2fit.ss2backend.Service.DiscountService;
@@ -28,7 +25,6 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/product/")
-@CrossOrigin("*")
 public class ProductController {
     @Autowired
     private ProductService productService;
@@ -115,18 +111,6 @@ public class ProductController {
     }
 
     @PreAuthorize("isAuthenticated() and hasAnyAuthority('STAFF')")
-    @PostMapping("/apply-discount")
-    public ResponseEntity<String> createAndApplyDiscount(@RequestBody CreateDiscountDTO createDiscountDTO) {
-        try {
-            discountService.createAndApplyDiscount(createDiscountDTO.getDiscountDTO(), createDiscountDTO.getProductIds());
-
-            return new ResponseEntity<>("OK", HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.FORBIDDEN);
-        }
-    }
-
-    @PreAuthorize("isAuthenticated() and hasAnyAuthority('STAFF')")
     @PostMapping("/delete-product")
     public ResponseEntity deleteProduct(@RequestParam("productId") String productId) {
         try {
@@ -160,5 +144,43 @@ public class ProductController {
              List.of("createdDate", "price", "name", "quantity")
      );
     }
+
+    @PostMapping("/update")
+    @PreAuthorize("hasAnyAuthority('STAFF', 'ADMIN')")
+    public ResponseEntity updateProduct(@RequestBody UpdateProductDTO updateProductDTO) {
+        try {
+            return ResponseEntity.ok(productService.updateProduct(updateProductDTO));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+
+    @PostMapping("/add-image")
+    @PreAuthorize("hasAnyAuthority('STAFF', 'ADMIN')")
+    public ResponseEntity addProductImage(@RequestParam("images") MultipartFile[] multipartFiles,
+                                          @RequestParam("productID") String productId,
+                                          @RequestHeader String host) {
+        try {
+            productService.addImagesToProduct(host, multipartFiles, productId);
+            return ResponseEntity.ok().body("OK");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e);
+        }
+    }
+
+    @DeleteMapping("/remove-image")
+    @PreAuthorize("hasAnyAuthority('STAFF', 'ADMIN')")
+    public ResponseEntity removeProductImage(@RequestBody RemoveProductImagesDTO removeProductImagesDTO) {
+        try {
+            productService.removeImagesFromProduct(removeProductImagesDTO.getProductImagesId(),
+                    removeProductImagesDTO.getProductId());
+            return ResponseEntity.ok().body("OK");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e);
+        }
+    }
+
+
 
 }
