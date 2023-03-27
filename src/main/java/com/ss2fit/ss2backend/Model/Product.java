@@ -1,6 +1,8 @@
 package com.ss2fit.ss2backend.Model;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.ss2fit.ss2backend.utils.Exceptions.NotFoundException;
+import com.ss2fit.ss2backend.utils.Exceptions.ProductNotFoundException;
 import lombok.Data;
 import javax.persistence.*;
 import javax.validation.constraints.Min;
@@ -27,8 +29,7 @@ public class Product {
    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
    @JoinColumn(name = "product_id")
    private List<ProductImage> productImages = new ArrayList<>();
-   @OneToMany(mappedBy = "product")
-   @JsonManagedReference
+   @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
    private List<DiscountProduct> discountProducts;
    private Date createdDate;
 
@@ -40,6 +41,12 @@ public class Product {
 
    public void addProductImages(ProductImage productImage) {
       productImages.add(productImage);
+   }
+
+   public void removeProductImages(ProductImage productImage) {productImages.remove(productImage);}
+
+   public void addDiscountProduct(DiscountProduct discountProduct) {
+      discountProducts.add(discountProduct);
    }
 
    public DiscountProduct takeCurrentDiscountProduct() {
