@@ -93,19 +93,22 @@ public class ProductController {
 
     @PreAuthorize("isAuthenticated() and hasAnyAuthority('STAFF')")
     @PostMapping("/create-product")
-    public String createProduct(@RequestHeader String host,
+    public String createProduct(
                                 @ModelAttribute CreateProductDTO createProductDTO,
                                 @RequestParam("images") MultipartFile[] multipartFile) {
+        List<String> imagesList = null;
 
-        List<String> imagesList = Arrays.stream(multipartFile).map(
-                file -> {
-                    try {
-                        return host + filesStorageService.save(file);
-                    } catch (Exception e) {
-                        throw new RuntimeException(e);
+        if (multipartFile.length > 0 && multipartFile[0].getContentType() != null) {
+            imagesList = Arrays.stream(multipartFile).map(
+                    file -> {
+                        try {
+                            return filesStorageService.save(file);
+                        } catch (Exception e) {
+                            throw new RuntimeException(e);
+                        }
                     }
-                }
-        ).collect(Collectors.toList());
+            ).collect(Collectors.toList());
+        }
         productService.createProduct(createProductDTO, imagesList);
         return "OK";
     }
@@ -118,7 +121,7 @@ public class ProductController {
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (EmptyResultDataAccessException err) {
             return new ResponseEntity("Product Not Found", HttpStatus.NOT_FOUND);
-        }  catch (Exception e) {
+        } catch (Exception e) {
             return new ResponseEntity(e.getMessage(), HttpStatus.FORBIDDEN);
         }
     }
@@ -140,9 +143,9 @@ public class ProductController {
 
     @GetMapping("/products-field")
     public ResponseEntity<List<String>> getProductFieldsToQuery() {
-     return ResponseEntity.ok().body(
-             List.of("createdDate", "price", "name", "quantity")
-     );
+        return ResponseEntity.ok().body(
+                List.of("createdDate", "price", "name", "quantity")
+        );
     }
 
     @PostMapping("/update")
@@ -159,10 +162,10 @@ public class ProductController {
     @PostMapping("/add-image")
     @PreAuthorize("hasAnyAuthority('STAFF', 'ADMIN')")
     public ResponseEntity addProductImage(@RequestParam("images") MultipartFile[] multipartFiles,
-                                          @RequestParam("productID") String productId,
-                                          @RequestHeader String host) {
+                                          @RequestParam("productID") String productId
+                                          ) {
         try {
-            productService.addImagesToProduct(host, multipartFiles, productId);
+            productService.addImagesToProduct(multipartFiles, productId);
             return ResponseEntity.ok().body("OK");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e);
@@ -180,7 +183,6 @@ public class ProductController {
             return ResponseEntity.badRequest().body(e);
         }
     }
-
 
 
 }
