@@ -29,8 +29,12 @@ public class AuthService {
         String jwtToken = jwtTokenProvider.generateToken(
                 (CustomUserDetails) authentication.getPrincipal()
         );
-        return new LoginResponse(jwtToken,
-                ((CustomUserDetails) authentication.getPrincipal()).getUsername());
+        return new LoginResponse(
+                jwtToken,
+                ((CustomUserDetails) authentication.getPrincipal()).getUsername(),
+                ((CustomUserDetails) authentication.getPrincipal()).getUser().getPhoneNumber(),
+                ((CustomUserDetails) authentication.getPrincipal()).getUser().getRoles()
+        );
     }
 
     public CustomUserDetails getCurrentUser() {
