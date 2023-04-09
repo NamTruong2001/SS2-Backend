@@ -16,7 +16,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/discount")
 @PreAuthorize("hasAnyAuthority('STAFF', 'ADMIN')")
-@CrossOrigin("*")
+@CrossOrigin(origins = "*")
 public class DiscountController {
     @Autowired
     DiscountService discountService;
