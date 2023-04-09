@@ -1,8 +1,5 @@
 package com.ss2fit.ss2backend.Model;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.ss2fit.ss2backend.utils.Exceptions.NotFoundException;
-import com.ss2fit.ss2backend.utils.Exceptions.ProductNotFoundException;
 import lombok.Data;
 import javax.persistence.*;
 import javax.validation.constraints.Min;

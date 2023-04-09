@@ -1,5 +1,6 @@
 package com.ss2fit.ss2backend.Model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -16,9 +17,12 @@ public class User {
     private String username;
     private String firstName;
     private String lastName;
+    @JsonIgnore
     private String password;
+    @JsonIgnore
     private Date createdDate;
     private String phoneNumber;
+    @JsonIgnore
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinTable(
             name = "user_role",
