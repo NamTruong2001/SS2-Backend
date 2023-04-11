@@ -41,7 +41,7 @@ public class CommentService {
         List<CommentImage> commentImages = images.stream().map(
                 file -> {
                     try {
-                        return filesStorageService.save(file);
+                        return filesStorageService.saveImage(file);
                     } catch (IOException e) {
                         throw new UncheckedIOException(e);
                     }

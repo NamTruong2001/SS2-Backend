@@ -5,6 +5,7 @@ import com.ss2fit.ss2backend.Model.*;
 import com.ss2fit.ss2backend.Repository.OrderRepository;
 import com.ss2fit.ss2backend.Repository.ProductRepository;
 import com.ss2fit.ss2backend.utils.Exceptions.OrderNotFoundException;
+import com.ss2fit.ss2backend.utils.Exceptions.UnapproriateAction;
 import com.ss2fit.ss2backend.utils.GenerateRandomString;
 import com.ss2fit.ss2backend.utils.PageableObject;
 import org.modelmapper.ModelMapper;
@@ -40,9 +41,9 @@ public class OrderService {
     private ModelMapper modelMapper;
 
     @Transactional
-    public String makeOrder(List<CartItem> cartItems) {
+    public String makeOrder(OrderCreation orderCreation) {
         Order order = new Order();
-        List<OrderDetail> orderDetails = cartItems.stream()
+        List<OrderDetail> orderDetails = orderCreation.getItems().stream()
                 .map(cartItem -> {
                             Product product = productService.getProduct(cartItem.getProductId());
                             product.setQuantity(product.getQuantity() - cartItem.getQuantity());
@@ -69,12 +70,18 @@ public class OrderService {
                 .date(new Date())
                 .info("Nguời dùng đặt hàng thành công")
                 .order(order).build();
-
+        User user = authService.getCurrentUser().getUser();
         order.setOrderDetail(orderDetails);
+        order.setAddress(
+                orderCreation.getAddress()
+        );
+        order.setPhoneNumber(
+                orderCreation.getPhoneNumber()
+        );
         order.setTotalMoney(totalMoney);
         order.setStatus(Order.OrderStatus.PENDING);
         order.setId(GenerateRandomString.generate());
-        order.setUser(authService.getCurrentUser().getUser());
+        order.setUser(user);
         order.setCreatedDate(new Date());
         order.addOrderHistory(orderHistory); //add order history
         Order savedOrder = orderRepository.save(order);
@@ -185,12 +192,15 @@ public class OrderService {
     }
 
     @Transactional
-    public OrderDTO setOrderStatusToCancel(String orderId, String comment) throws OrderNotFoundException {
+    public OrderDTO setOrderStatusToCancel(String orderId, String comment) throws OrderNotFoundException, UnapproriateAction {
         Optional<Order> orderOptional = orderRepository.findOrderByIdAndUser_Id(orderId,
                 authService.getCurrentUser().getUser().getId());
 
         if (orderOptional.isPresent()) {
             Order order = orderOptional.get();
+            if (order.getStatus() == Order.OrderStatus.COMPLETE || order.getStatus() == Order.OrderStatus.DELIVERING) {
+                throw new UnapproriateAction();
+            }
             order.setStatus(Order.OrderStatus.CANCEL);
             order.getOrderDetail().stream()
                     .forEach(orderDetail -> {
@@ -244,11 +254,14 @@ public class OrderService {
         }
     }
 
-    public OrderDTO setOrderStatusToComplete(String orderId, String comment) throws OrderNotFoundException {
+    public OrderDTO setOrderStatusToComplete(String orderId, String comment) throws OrderNotFoundException, UnapproriateAction {
         Optional<Order> orderOptional = orderRepository.findById(orderId);
         if (orderOptional.isPresent()) {
             Order order = orderOptional.get();
             order.setStatus(Order.OrderStatus.COMPLETE);
+            if (order.getStatus() == Order.OrderStatus.CANCEL) {
+                throw new UnapproriateAction();
+            }
             OrderHistory orderHistory = OrderHistory
                     .builder()
                     .user(authService.getCurrentUser().getUser())

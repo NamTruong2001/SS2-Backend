@@ -20,6 +20,8 @@ public class Order {
     @JoinColumn(name = "user_id")
     private User user;
     private Date createdDate;
+    private String phoneNumber;
+    private String address;
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     private List<OrderHistory> orderHistory = new ArrayList<>();
 

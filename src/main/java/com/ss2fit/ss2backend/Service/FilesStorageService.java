@@ -30,7 +30,7 @@ public class FilesStorageService {
         }
     }
 
-    public String save(MultipartFile file) throws IOException {
+    public String saveImage(MultipartFile file) throws IOException {
         try {
             String uuid = UUID.randomUUID().toString();
             String extension = GetFileExtension.get(file.getOriginalFilename());

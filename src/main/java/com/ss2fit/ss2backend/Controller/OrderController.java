@@ -2,10 +2,12 @@ package com.ss2fit.ss2backend.Controller;
 
 
 import com.ss2fit.ss2backend.DTO.ItemPage;
+import com.ss2fit.ss2backend.DTO.OrderCreation;
 import com.ss2fit.ss2backend.DTO.OrderDTO;
 import com.ss2fit.ss2backend.DTO.CartItem;
 import com.ss2fit.ss2backend.Service.OrderService;
 import com.ss2fit.ss2backend.utils.Exceptions.OrderNotFoundException;
+import com.ss2fit.ss2backend.utils.Exceptions.UnapproriateAction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -25,9 +27,8 @@ public class OrderController {
 
     @PostMapping("/make-order")
     @PreAuthorize("isAuthenticated() and hasAuthority('USER')")
-    public ResponseEntity makeOrder(@RequestBody List<CartItem> cartItems) {
-
-        return ResponseEntity.ok().body(orderService.makeOrder(cartItems));
+    public ResponseEntity makeOrder(@RequestBody OrderCreation orderCreation) {
+        return ResponseEntity.ok().body(orderService.makeOrder(orderCreation));
     }
 
     @GetMapping("/get-orders")
@@ -75,7 +76,9 @@ public class OrderController {
                     orderService.setOrderStatusToCancel(orderRequest.get("id"), orderRequest.get("comment"))
             );
         } catch (OrderNotFoundException ex) {
-            return ResponseEntity.badRequest().body(ex);
+            return ResponseEntity.badRequest().body("Order Not Found");
+        } catch (UnapproriateAction action) {
+            return ResponseEntity.badRequest().body("Cannot cancel complete or delivering order");
         }
     }
 
@@ -99,7 +102,9 @@ public class OrderController {
                     orderService.setOrderStatusToComplete(orderRequest.get("id"), orderRequest.get("comment"))
             );
         } catch (OrderNotFoundException ex) {
-            return ResponseEntity.badRequest().body(ex);
+            return ResponseEntity.badRequest().body("Order Not Found");
+        } catch (UnapproriateAction e) {
+            return ResponseEntity.badRequest().body("Cannot change order status");
         }
     }
 

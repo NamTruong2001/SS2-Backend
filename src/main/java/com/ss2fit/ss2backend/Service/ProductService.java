@@ -16,7 +16,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.modelmapper.ModelMapper;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
@@ -118,7 +117,7 @@ public class ProductService {
         Arrays.stream(multipartFiles).map(
                 file -> {
                     try {
-                        return filesStorageService.save(file);
+                        return filesStorageService.saveImage(file);
                     } catch (IOException e) {
                         throw new UncheckedIOException(e);
                     }

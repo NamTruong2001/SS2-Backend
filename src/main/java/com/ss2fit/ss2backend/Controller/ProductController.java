@@ -103,7 +103,7 @@ public class ProductController {
             imagesList = Arrays.stream(multipartFile).map(
                     file -> {
                         try {
-                            return filesStorageService.save(file);
+                            return filesStorageService.saveImage(file);
                         } catch (Exception e) {
                             throw new RuntimeException(e);
                         }
