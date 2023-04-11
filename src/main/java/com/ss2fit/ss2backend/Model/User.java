@@ -2,6 +2,8 @@ package com.ss2fit.ss2backend.Model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
+import org.hibernate.annotations.DynamicUpdate;
+import org.springframework.beans.BeanUtils;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -11,6 +13,7 @@ import java.util.Set;
 @Entity
 @Data
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = {"username", "phoneNumber"}))
+@DynamicUpdate
 public class User {
     @Id
     private String id;
@@ -22,6 +25,9 @@ public class User {
     @JsonIgnore
     private Date createdDate;
     private String phoneNumber;
+    private String address;
+    private Date dob;
+    private String avatarURL;
     @JsonIgnore
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinTable(

@@ -5,6 +5,7 @@ import com.ss2fit.ss2backend.DTO.LoginResponse;
 import com.ss2fit.ss2backend.DTO.RegisterRequest;
 import com.ss2fit.ss2backend.Service.AuthService;
 import com.ss2fit.ss2backend.Service.UserService;
+import com.ss2fit.ss2backend.utils.Exceptions.UserAlreadyExist;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,8 +32,10 @@ public class AuthController {
         try {
             userService.registerUser(registerRequest);
             return new ResponseEntity("Register successfully", HttpStatus.OK);
+        } catch (UserAlreadyExist e) {
+            return new ResponseEntity("Username existed, please choose another username", HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
-            return new ResponseEntity(e.getMessage(), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }
