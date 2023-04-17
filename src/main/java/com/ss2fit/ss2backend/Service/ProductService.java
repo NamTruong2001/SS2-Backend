@@ -204,6 +204,17 @@ public class ProductService {
         }
     }
 
+    public List<SmallProductDto> findProducyByNameContaining(String name) {
+        return productRepository.findByNameLike(name).stream()
+                .map(product -> {
+                    SmallProductDto productDto = new SmallProductDto();
+                    productDto.setId(product.getId());
+                    productDto.setName(productDto.getName());
+
+                    return productDto;
+                }).collect(Collectors.toList());
+    }
+
     private ItemPage<ProductDTO> paginate(int curr, long totalItems, int totalPages, List<ProductDTO> productDTOList) {
         ItemPage<ProductDTO> productDTOItemPage = new ItemPage<>();
         productDTOItemPage.setCurrentPage(curr);

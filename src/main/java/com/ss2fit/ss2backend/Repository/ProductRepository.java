@@ -1,6 +1,5 @@
 package com.ss2fit.ss2backend.Repository;
 
-import com.ss2fit.ss2backend.DTO.ProductDTO;
 import com.ss2fit.ss2backend.Model.Category;
 import com.ss2fit.ss2backend.Model.Product;
 import org.springframework.data.domain.Pageable;
@@ -11,7 +10,6 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 public interface ProductRepository extends JpaRepository<Product, String> {
@@ -24,6 +22,10 @@ public interface ProductRepository extends JpaRepository<Product, String> {
       List<Product> findProductsByCategoryName(String categoryName);
       List<Product> findProductsByCategory(Category category);
       List<Product> findByIdIn(List<String> ids);
+
+      @Query("select p from Product p where p.name like %?1%")
+      List<Product> findByNameLike(String name);
+
       void deleteById(String id);
       @Query("SELECT p FROM Product p " +
               "left join p.discountProducts pd " +
@@ -36,6 +38,15 @@ public interface ProductRepository extends JpaRepository<Product, String> {
               "left join Discount d on pd.discount.code = d.code " +
               "where CURDATE() >= pd.discount.startDate AND CURDATE() <= pd.discount.endDate")
       List<Product> findProductsCurrentlyDiscount();
+
+      @Query("select p from Product p where p.price < ?1")
+      List<Product> findByPriceLessThan(double price, Pageable pageable);
+
+      @Query("select p from Product p inner join p.discountProducts discountProducts " +
+              "where discountProducts.discount.startDate < ?1 and discountProducts.discount.endDate > ?2 and discountProducts.id is null")
+      List<Product> findByDiscountProducts_Discount_StartDateLessThanAndDiscountProducts_Discount_EndDateGreaterThanAndDiscountProducts_IdNull(Date startDate, Date endDate);
+
+
 
 
 }

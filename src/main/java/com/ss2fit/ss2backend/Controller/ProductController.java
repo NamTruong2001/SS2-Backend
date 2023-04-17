@@ -185,5 +185,10 @@ public class ProductController {
         }
     }
 
+    @GetMapping("/find-small")
+    public ResponseEntity findSmallProductByName(@RequestParam("name") String name) {
+        return ResponseEntity.ok().body(productService.findProducyByNameContaining(name));
+    }
+
 
 }
