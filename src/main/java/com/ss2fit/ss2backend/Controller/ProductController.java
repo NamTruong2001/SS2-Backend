@@ -134,14 +134,6 @@ public class ProductController {
         );
     }
 
-    @GetMapping("/images/{filename:.+}")
-    @ResponseBody
-    public ResponseEntity<Resource> getFile(@PathVariable String filename) {
-        Resource file = (Resource) filesStorageService.load(filename);
-        return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getURL().getFile() + "\"").body(file);
-    }
-
     @GetMapping("/products-field")
     public ResponseEntity<List<String>> getProductFieldsToQuery() {
         return ResponseEntity.ok().body(
