@@ -19,7 +19,6 @@ public class RegisterRequest {
     @NotBlank(message = "Username can not be empty")
     private String username;
     @NotBlank(message = "Password can not be empty")
-    @Size(min = 5, message = "Password length must greater than 5")
     private String password;
     private String dob;
     private String address;

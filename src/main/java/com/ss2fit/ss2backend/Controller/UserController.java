@@ -20,7 +20,7 @@ public class UserController {
     @Autowired
     UserService userService;
     @GetMapping("/info")
-    @PreAuthorize("hasAuthority('USER')")
+    @PreAuthorize("isAuthenticated()")
     public User getInfo() {
         return authService.getCurrentUser().getUser();
     }

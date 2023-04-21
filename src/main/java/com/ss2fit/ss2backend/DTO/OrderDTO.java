@@ -1,10 +1,7 @@
 package com.ss2fit.ss2backend.DTO;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.ss2fit.ss2backend.Model.DiscountProduct;
-import com.ss2fit.ss2backend.Model.Order;
-import com.ss2fit.ss2backend.Model.Product;
-import com.ss2fit.ss2backend.Model.ProductImage;
+import com.ss2fit.ss2backend.Model.*;
 import lombok.*;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,10 +17,14 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 @NoArgsConstructor
 public class OrderDTO {
+    private String id;
     @JsonProperty("orderItems")
     private List<OrderItemDTO> orderItemDTOS = new ArrayList<>();
     private Double totalPrice;
     private String status;
     private Date createdDate;
+    private String phoneNumber;
+    private String address;
+    private List<OrderHistory> orderHistories;
     
 }

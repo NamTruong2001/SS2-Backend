@@ -53,12 +53,13 @@ public class UserService implements UserDetailsService {
 
     public void registerUser(RegisterRequest registerRequest) throws UserAlreadyExist, ParseException, PhoneNumberExist {
 
-        if (userRepository.existsByUsername(registerRequest.getUsername())) {
+        if (userRepository.findUserByUsername(registerRequest.getUsername()) != null) {
             throw new UserAlreadyExist();
         }
-        if (userRepository.existsByPhoneNumber(registerRequest.getPhoneNumber())) {
-            throw new PhoneNumberExist();
-        }
+//        System.out.println(userRepository.existsByPhoneNumber(registerRequest.getPhoneNumber()));
+//        if (userRepository.existsByPhoneNumber(registerRequest.getPhoneNumber())) {
+//            throw new PhoneNumberExist();
+//        }
 
         User user = new User();
         user.setUsername(registerRequest.getUsername());
@@ -67,7 +68,7 @@ public class UserService implements UserDetailsService {
         user.setLastName(registerRequest.getLastName());
         user.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
         user.setAddress(registerRequest.getAddress());
-        user.setDob(DateFormat.parse(registerRequest.getDob()));
+        user.setDob(registerRequest.getDob() == null ? null : DateFormat.parse(registerRequest.getDob()));
         user.setCreatedDate(new Date());
         user.setRoles(Set.of(roleRepository.findById(1).get()));
 

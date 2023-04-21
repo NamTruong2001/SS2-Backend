@@ -95,7 +95,7 @@ public class OrderService {
         } else {
             pageable = PageRequest.of(page, size, Sort.by(sortOption).descending());
         }
-
+        System.out.println(authService.getCurrentUser().toString());
         Page<Order> ordersPage = orderRepository.findAllByUserId(
                 authService.getCurrentUser().getUser().getId(),
                 pageable
@@ -130,9 +130,12 @@ public class OrderService {
 
     public OrderDTO convertOrderToDTO(Order order) {
         OrderDTO orderDTO = new OrderDTO();
+        orderDTO.setId(order.getId());
         orderDTO.setTotalPrice(order.getTotalMoney());
         orderDTO.setStatus(order.getStatus().getCode());
         orderDTO.setCreatedDate(order.getCreatedDate());
+        orderDTO.setAddress(order.getAddress());
+        orderDTO.setPhoneNumber(order.getPhoneNumber());
         List<OrderItemDTO> orderItemDTOS = order.getOrderDetail().stream()
                 .map(orderDetail -> {
                     OrderItemDTO orderItemDTO = new OrderItemDTO();
@@ -161,6 +164,7 @@ public class OrderService {
                     orderItemDTO.setProductDTO(productDTO);
                     return orderItemDTO;
                 }).collect(Collectors.toList());
+        orderDTO.setOrderHistories(order.getOrderHistory());
         orderDTO.setOrderItemDTOS(orderItemDTOS);
         return orderDTO;
     }
