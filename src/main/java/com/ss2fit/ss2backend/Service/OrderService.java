@@ -139,6 +139,9 @@ public class OrderService {
         orderDTO.setCreatedDate(order.getCreatedDate());
         orderDTO.setAddress(order.getAddress());
         orderDTO.setPhoneNumber(order.getPhoneNumber());
+        orderDTO.setWard(order.getWards());
+        orderDTO.setDistrict(order.getDistrict());
+        orderDTO.setProvince(order.getProvince());
         List<OrderItemDTO> orderItemDTOS = order.getOrderDetail().stream()
                 .map(orderDetail -> {
                     OrderItemDTO orderItemDTO = new OrderItemDTO();

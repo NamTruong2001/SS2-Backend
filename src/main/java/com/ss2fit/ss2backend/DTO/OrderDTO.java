@@ -25,6 +25,9 @@ public class OrderDTO {
     private Date createdDate;
     private String phoneNumber;
     private String address;
+    private String ward;
+    private String district;
+    private String province;
     private List<OrderHistory> orderHistories;
     
 }
