@@ -84,6 +84,9 @@ public class OrderService {
         order.setUser(user);
         order.setCreatedDate(new Date());
         order.addOrderHistory(orderHistory); //add order history
+        order.setWards(orderCreation.getWards());
+        order.setDistrict(orderCreation.getDistrict());
+        order.setProvince(orderCreation.getProvince());
         Order savedOrder = orderRepository.save(order);
         return savedOrder.getId();
     }

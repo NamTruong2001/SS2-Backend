@@ -21,10 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.transaction.Transactional;
 import java.io.IOException;
 import java.io.UncheckedIOException;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -204,6 +201,10 @@ public class ProductService {
         }
     }
 
+    public List<ProductDTO> getManyProducts(List<String> products) {
+        return productRepository.findByIdIn(products).stream().map(this::applyDiscountAndConvertToDTO).collect(Collectors.toList());
+    }
+
     private ItemPage<ProductDTO> paginate(int curr, long totalItems, int totalPages, List<ProductDTO> productDTOList) {
         ItemPage<ProductDTO> productDTOItemPage = new ItemPage<>();
         productDTOItemPage.setCurrentPage(curr);
@@ -213,5 +214,6 @@ public class ProductService {
 
         return productDTOItemPage;
     }
+
 
 }

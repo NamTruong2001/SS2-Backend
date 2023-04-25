@@ -12,5 +12,8 @@ import java.util.List;
 public class OrderCreation {
     private String phoneNumber;
     private String address;
+    private String wards;
+    private String province;
+    private String district;
     private List<CartItem> items;
 }

@@ -22,6 +22,9 @@ public class Order {
     private Date createdDate;
     private String phoneNumber;
     private String address;
+    private String wards;
+    private String province;
+    private String district;
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     private List<OrderHistory> orderHistory = new ArrayList<>();
 

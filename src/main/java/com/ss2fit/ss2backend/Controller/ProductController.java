@@ -21,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
@@ -149,6 +150,11 @@ public class ProductController {
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
+    }
+
+    @PostMapping("/get-many")
+    public ResponseEntity getManyProducts(@RequestBody List<String> products) {
+        return ResponseEntity.ok(productService.getManyProducts(products));
     }
 
 
