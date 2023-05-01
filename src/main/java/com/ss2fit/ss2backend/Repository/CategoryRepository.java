@@ -16,4 +16,6 @@ public interface CategoryRepository extends JpaRepository<Category, String> {
    boolean existsByName(String name);
    Category findByName(String name);
    void deleteByName(String name);
+   @Query("select c from Category c where c.name like %:q%")
+   List<Category> searchCategoriesByNa(@Param("q") String name);
 }

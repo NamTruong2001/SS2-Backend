@@ -135,6 +135,13 @@ public class ProductController {
         );
     }
 
+    @GetMapping("/big-discount")
+    public ResponseEntity<List<ProductDTO>> getBigDiscountProduct() {
+        return ResponseEntity.ok().body(
+                productService.getBigDiscountProduct()
+        );
+    }
+
     @GetMapping("/products-field")
     public ResponseEntity<List<String>> getProductFieldsToQuery() {
         return ResponseEntity.ok().body(
@@ -181,6 +188,11 @@ public class ProductController {
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e);
         }
+    }
+
+    @GetMapping("/arrivals")
+    public ResponseEntity getNewArrivals() {
+        return ResponseEntity.ok( productService.findNewArrivals());
     }
 
 

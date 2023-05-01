@@ -1,6 +1,7 @@
 package com.ss2fit.ss2backend.Repository;
 
 import com.ss2fit.ss2backend.DTO.ProductDTO;
+import com.ss2fit.ss2backend.DTO.SearhProduct;
 import com.ss2fit.ss2backend.Model.Category;
 import com.ss2fit.ss2backend.Model.Product;
 import org.springframework.data.domain.Pageable;
@@ -35,7 +36,10 @@ public interface ProductRepository extends JpaRepository<Product, String> {
               "left join p.discountProducts pd " +
               "left join Discount d on pd.discount.code = d.code " +
               "where CURDATE() >= pd.discount.startDate AND CURDATE() <= pd.discount.endDate")
-      List<Product> findProductsCurrentlyDiscount();
+      List<Product> findProductsCurrentlyDiscount(Pageable pageable);
 
+      @Query("select p from Product p where p.name like %:q%")
+      List<SearhProduct> searchProductByName(@Param("q") String name);
 
 }
+

@@ -13,7 +13,7 @@ import java.util.HashMap;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("api/revenue")
+@RequestMapping("/api/revenue")
 @PreAuthorize("hasAnyAuthority('STAFF', 'ADMIN')")
 public class RevenueController {
     @Autowired

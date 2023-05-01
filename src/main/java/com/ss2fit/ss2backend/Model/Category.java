@@ -1,6 +1,5 @@
 package com.ss2fit.ss2backend.Model;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 
 import javax.persistence.Entity;

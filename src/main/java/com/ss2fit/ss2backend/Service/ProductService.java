@@ -168,8 +168,15 @@ public class ProductService {
     }
 
     public List<ProductDTO> getDiscountProduct() {
-        return productRepository.findProductsCurrentlyDiscount().stream()
+        return productRepository.findProductsCurrentlyDiscount(null).stream()
                 .map(this::applyDiscountAndConvertToDTO).collect(Collectors.toList());
+    }
+
+    public List<ProductDTO> getBigDiscountProduct() {
+        List<ProductDTO> productDTOList =  productRepository.findProductsCurrentlyDiscount(Pageable.ofSize(10)).stream()
+                .map(this::applyDiscountAndConvertToDTO).collect(Collectors.toList());
+        Collections.sort(productDTOList, (o1, o2) -> Double.compare(o2.getDiscountDTO().getDiscountPercent(), o1.getDiscountDTO().getDiscountPercent()));
+        return productDTOList;
     }
 
     public void deleteProduct(String id) {
@@ -203,6 +210,11 @@ public class ProductService {
 
     public List<ProductDTO> getManyProducts(List<String> products) {
         return productRepository.findByIdIn(products).stream().map(this::applyDiscountAndConvertToDTO).collect(Collectors.toList());
+    }
+
+    public List<ProductDTO> findNewArrivals() {
+        Pageable pageable = PageableObject.getPage(0, 12, "createdDate", "desc4");
+        return productRepository.findAll(pageable).stream().map(this::applyDiscountAndConvertToDTO).collect(Collectors.toList());
     }
 
     private ItemPage<ProductDTO> paginate(int curr, long totalItems, int totalPages, List<ProductDTO> productDTOList) {
