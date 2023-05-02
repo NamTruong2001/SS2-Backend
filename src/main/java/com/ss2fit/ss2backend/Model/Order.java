@@ -13,6 +13,7 @@ public class Order {
     @Id
     private String id;
     private double totalMoney;
+    @Enumerated(EnumType.STRING)
     private OrderStatus status;
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     private List<OrderDetail> orderDetail;
