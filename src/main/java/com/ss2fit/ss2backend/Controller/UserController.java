@@ -14,6 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api/user")
+@CrossOrigin(origins = "*")
 public class UserController {
     @Autowired
     AuthService authService;
@@ -40,7 +41,7 @@ public class UserController {
         }
     }
 
-    @PutMapping("/update-image")
+    @PostMapping("/update-image")
     @PreAuthorize("hasAuthority('USER')")
     public ResponseEntity updateUser(@RequestParam("image") MultipartFile image) {
         try {

@@ -19,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Optional;
 import java.util.Set;
@@ -68,7 +69,7 @@ public class UserService implements UserDetailsService {
         user.setLastName(registerRequest.getLastName());
         user.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
         user.setAddress(registerRequest.getAddress());
-        user.setDob(registerRequest.getDob() == null ? null : DateFormat.parse(registerRequest.getDob()));
+        user.setDob(registerRequest.getDob() == null ? null : new SimpleDateFormat("yyyy-MM-dd").parse(registerRequest.getDob()));
         user.setCreatedDate(new Date());
         user.setRoles(Set.of(roleRepository.findById(1).get()));
 
