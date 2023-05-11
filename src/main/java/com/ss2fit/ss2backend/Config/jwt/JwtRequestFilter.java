@@ -50,10 +50,25 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                 }
             }
         } catch (ExpiredJwtException expiredJwtException) {
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Token expired");
-            return;
+            if (!requiresAuthentication(request)) {
+                logger.debug("Expired token for non-authenticated request: {}",
+                        expiredJwtException);
+            } else {
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Token expired");
+                return;
+            }
         }
         filterChain.doFilter(request, response);
+    }
+
+    private boolean requiresAuthentication(HttpServletRequest request) {
+        String path = request.getServletPath();
+        if (path.equals("/api/product/arrivals")
+                || path.equals("/api/product/big-discount")
+                || path.equals("/api/product//discount-product")) {
+            return false;
+        }
+        return true;
     }
 
     private String getJwtFromRequest(HttpServletRequest request) {

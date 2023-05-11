@@ -14,7 +14,13 @@ public class SearchController {
     @Autowired
     SearchService searchService;
     @GetMapping("/pro-and-cat")
-    public ResponseEntity searchProductAndCategory(@RequestParam("q") String q) {
+    public ResponseEntity searchProduct(@RequestParam("q") String q) {
         return ResponseEntity.ok(searchService.searchProductAndCategory(q));
+    }
+
+    @GetMapping("/price")
+    public ResponseEntity searchProductByPriceBetween(@RequestParam("start") String start,
+                                               @RequestParam("end") String end) {
+     return ResponseEntity.ok(searchService.searchProductByPriceBetween(start, end));
     }
 }

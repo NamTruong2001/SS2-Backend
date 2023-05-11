@@ -236,8 +236,7 @@ public class OrderService {
 
     @Transactional
     public OrderDTO setOrderStatusToCancelByAdmin(String orderId, String comment) throws OrderNotFoundException {
-        Optional<Order> orderOptional = orderRepository.findOrderByIdAndUser_Id(orderId,
-                authService.getCurrentUser().getUser().getId());
+        Optional<Order> orderOptional = orderRepository.findOrderById(orderId);
 
         if (orderOptional.isPresent()) {
             Order order = orderOptional.get();

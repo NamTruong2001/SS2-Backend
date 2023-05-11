@@ -22,6 +22,7 @@ public interface OrderRepository extends JpaRepository<Order, String> {
     Page<Order> findOrdersByUserUsername(String username, Pageable pageable);
     Optional<Order> findOrderByIdAndUser(String orderId, User user);
     Optional<Order> findOrderByIdAndUser_Id(String orderId, String username);
+    Optional<Order> findOrderById(String orderId);
 
     @Query("SELECT SUM(o.totalMoney) FROM Order o WHERE o.status = 'COMPLETE' AND DAY(o.createdDate) = :day AND MONTH(o.createdDate) = :month AND YEAR(o.createdDate) = :year")
     Double getRevenueByDayMonthYear(@Param("day") int day, @Param("month") int month, @Param("year") int year);

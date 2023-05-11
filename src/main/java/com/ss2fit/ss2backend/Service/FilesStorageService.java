@@ -1,15 +1,17 @@
 package com.ss2fit.ss2backend.Service;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.net.MalformedURLException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Base64;
 import java.util.UUID;
 import java.util.stream.Stream;
 
 import com.ss2fit.ss2backend.utils.GetFileExtension;
+import org.jboss.logging.Logger;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;

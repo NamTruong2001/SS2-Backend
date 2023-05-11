@@ -18,10 +18,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
@@ -43,6 +40,11 @@ public class ProductController {
                                                @RequestParam(defaultValue = "createdDate") String sort,
                                                @RequestParam(defaultValue = "desc") String sortOrder) {
         return productService.getAllProducts(page, size, sort, sortOrder);
+    }
+
+    @GetMapping("/all")
+    public List<ProductDTO> directAll() {
+        return productService.getAllProducts();
     }
 
     @GetMapping("/get/{id}")
@@ -97,7 +99,8 @@ public class ProductController {
     @PostMapping("/create-product")
     public String createProduct(
                                 @ModelAttribute CreateProductDTO createProductDTO,
-                                @RequestParam("images") MultipartFile[] multipartFile) {
+                                @RequestParam("images") MultipartFile[] multipartFile
+    ){
         List<String> imagesList = null;
 
         if (multipartFile.length > 0 && multipartFile[0].getContentType() != null) {
@@ -112,6 +115,7 @@ public class ProductController {
             ).collect(Collectors.toList());
         }
         productService.createProduct(createProductDTO, imagesList);
+        System.out.println(createProductDTO);
         return "OK";
     }
 

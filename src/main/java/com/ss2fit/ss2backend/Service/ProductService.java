@@ -60,6 +60,10 @@ public class ProductService {
        return productRepository.findById(id).orElseThrow(() -> new RuntimeException("Product Not Found"));
     }
 
+    public List<ProductDTO> getAllProducts() {
+        return productRepository.findAll().stream().map(this::applyDiscountAndConvertToDTO).collect(Collectors.toList());
+    }
+
     public List<ProductDTO> getProductsByCategoryName(String categoryName) throws CategoryNotFoundException {
         Optional<List<Product>> products = Optional.of(productRepository.findProductsByCategoryName(categoryName));
         return products.get().stream().
@@ -96,15 +100,17 @@ public class ProductService {
         product.setCategory(
                 categoryRepository.findByName(productDTO.getCategoryName())
         );
-        List<ProductImage> productImages = imageURLs.stream().map(
-                imageURL -> {
-                    ProductImage productImage = new ProductImage();
-                    productImage.setImageURL(imageURL);
-                    //product.addProductImages(productImage);
-                    return productImage;
-                }
-        ).collect(Collectors.toList());
-        product.setProductImages(productImages);
+        if (imageURLs != null) {
+            List<ProductImage> productImages = imageURLs.stream().map(
+                    imageURL -> {
+                        ProductImage productImage = new ProductImage();
+                        productImage.setImageURL(imageURL);
+                        //product.addProductImages(productImage);
+                        return productImage;
+                    }
+            ).collect(Collectors.toList());
+            product.setProductImages(productImages);
+        }
         productRepository.save(product);
     }
 
@@ -139,7 +145,7 @@ public class ProductService {
         productRepository.save(product);
     }
 
-    private ProductDTO applyDiscountAndConvertToDTO(Product product) {
+    public ProductDTO applyDiscountAndConvertToDTO(Product product) {
         ProductDTO productDTO = modelMapper.map(product, ProductDTO.class);
         productDTO.setCategoryName(
                 product.getCategory() == null ? null : product.getCategory().getName()
@@ -216,6 +222,7 @@ public class ProductService {
         Pageable pageable = PageableObject.getPage(0, 12, "createdDate", "desc4");
         return productRepository.findAll(pageable).stream().map(this::applyDiscountAndConvertToDTO).collect(Collectors.toList());
     }
+
 
     private ItemPage<ProductDTO> paginate(int curr, long totalItems, int totalPages, List<ProductDTO> productDTOList) {
         ItemPage<ProductDTO> productDTOItemPage = new ItemPage<>();
