@@ -142,6 +142,8 @@ public class OrderService {
         orderDTO.setWard(order.getWards());
         orderDTO.setDistrict(order.getDistrict());
         orderDTO.setProvince(order.getProvince());
+        orderDTO.setUsername(order.getUser().getUsername());
+        orderDTO.setRealName(order.getUser().getFirstName() + " " + order.getUser().getLastName());
         List<OrderItemDTO> orderItemDTOS = order.getOrderDetail().stream()
                 .map(orderDetail -> {
                     OrderItemDTO orderItemDTO = new OrderItemDTO();

@@ -13,14 +13,14 @@ import org.springframework.web.bind.annotation.RestController;
 public class SearchController {
     @Autowired
     SearchService searchService;
-    @GetMapping("/pro-and-cat")
+    @GetMapping("/product-by-name")
     public ResponseEntity searchProduct(@RequestParam("q") String q) {
         return ResponseEntity.ok(searchService.searchProductAndCategory(q));
     }
 
-    @GetMapping("/price")
-    public ResponseEntity searchProductByPriceBetween(@RequestParam("start") String start,
-                                               @RequestParam("end") String end) {
+    @GetMapping("/product-by-price")
+    public ResponseEntity searchProductByPriceBetween(@RequestParam("from") Double start,
+                                               @RequestParam("to") Double end) {
      return ResponseEntity.ok(searchService.searchProductByPriceBetween(start, end));
     }
 }

@@ -23,16 +23,13 @@ public class SearchService {
     @Autowired
     ProductService productService;
 
-    public Map<String, Object> searchProductAndCategory(String q) {
-          Map<String, Object> results = new HashMap<>();
-          results.put("products", productRepository.searchProductByName(q));
-          results.put("categories", categoryRepository.searchCategoriesByNa(q).stream().map(
-                  cat -> new CategoryDTO(cat.getId(), cat.getName())
-          ));
-          return results;
+    public List<ProductDTO> searchProductAndCategory(String q) {
+          return productRepository.searchProductsByName(q)
+                  .stream().map(product -> productService.applyDiscountAndConvertToDTO(product)).collect(Collectors.toList());
+
     }
 
-    public List<ProductDTO> searchProductByPriceBetween(String start, String end) {
+    public List<ProductDTO> searchProductByPriceBetween(Double start, Double end) {
         List<ProductDTO> productDTOList = productRepository.searchProductByPriceBetween(start, end)
                 .stream().map(product -> productService.applyDiscountAndConvertToDTO(product)).collect(Collectors.toList());
         return productDTOList;

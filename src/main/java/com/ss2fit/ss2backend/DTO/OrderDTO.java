@@ -29,5 +29,7 @@ public class OrderDTO {
     private String district;
     private String province;
     private List<OrderHistory> orderHistories;
+    private String username;
+    private String realName;
     
 }

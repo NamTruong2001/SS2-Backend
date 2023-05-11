@@ -39,9 +39,9 @@ public interface ProductRepository extends JpaRepository<Product, String> {
       List<Product> findProductsCurrentlyDiscount(Pageable pageable);
 
       @Query("select p from Product p where p.name like %:q%")
-      List<Product> searchProductByName(@Param("q") String name);
+      List<Product> searchProductsByName(@Param("q") String name);
       @Query("select p from Product p where p.price >= :start and p.price <= :end")
-      List<Product> searchProductByPriceBetween(@Param("start") String start, @Param("end") String end);
+      List<Product> searchProductByPriceBetween(@Param("start") Double start, @Param("end") Double end);
 
 }
 
