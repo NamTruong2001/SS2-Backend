@@ -2,6 +2,7 @@ package com.ss2fit.ss2backend.Service;
 
 import com.ss2fit.ss2backend.DTO.DiscountDTO;
 import com.ss2fit.ss2backend.DTO.ProductDTO;
+import com.ss2fit.ss2backend.DTO.ProductsDiscountDeletionDTO;
 import com.ss2fit.ss2backend.Model.Discount;
 import com.ss2fit.ss2backend.Model.DiscountProduct;
 import com.ss2fit.ss2backend.Model.Product;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.text.ParseException;
+import java.time.DateTimeException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -61,8 +63,8 @@ public class DiscountService {
     }
 
     public Discount getDiscount(String code) throws DiscountNotFound {
-         Optional<Discount> discountOptional = discountRepository.findById(code);
-         return discountOptional.orElseThrow(DiscountNotFound::new);
+        Optional<Discount> discountOptional = discountRepository.findById(code);
+        return discountOptional.orElseThrow(DiscountNotFound::new);
     }
 
     public List<Discount> getAllAvailableDiscount() {
@@ -73,15 +75,18 @@ public class DiscountService {
         return discountRepository.findAll();
     }
 
-    public List<Map<String, String>> getDiscountProducts(String code) throws DiscountNotFound {
+    public List<Map<String, Object>> getDiscountProducts(String code) throws DiscountNotFound {
         Discount discount = discountRepository.findById(code).orElseThrow(DiscountNotFound::new);
         List<DiscountProduct> discountProducts = discountProductRepository.findDiscountProductByDiscount(discount);
-        List<Map<String, String>> productList = new ArrayList<>();
+        List<Map<String, Object>> productList = new ArrayList<>();
 
         discountProducts.stream().forEach(discountProduct -> {
-            Map<String, String> products = new HashMap<>();
+            Map<String, Object> products = new HashMap<>();
             products.put("id", discountProduct.getProduct().getId());
             products.put("name", discountProduct.getProduct().getName());
+            Double productPrice = discountProduct.getProduct().getPrice();
+            products.put("price", productPrice);
+            products.put("discountPrice", calculateDiscount(productPrice, discount.getDiscountPercent()));
 
             productList.add(products);
         });
@@ -97,8 +102,28 @@ public class DiscountService {
         return rowsAffected;
     }
 
+    public void deleteMultipleProductFromDiscount(ProductsDiscountDeletionDTO productsDiscountDeletionDTO) throws Exception {
+        List<DiscountProduct> discountProducts = discountProductRepository.findDiscountProductsByIdsAndDiscountId(
+                productsDiscountDeletionDTO.getProductIds(),
+                productsDiscountDeletionDTO.getDiscountCode()
+        );
+        System.out.println(productsDiscountDeletionDTO);
+        for (DiscountProduct discountProduct : discountProducts) {
+            Date currDate = new Date();
+            Discount discount = discountProduct.getDiscount();
+            if (currDate.after(discount.getStartDate()) && currDate.before(discount.getEndDate())) {
+                throw new Exception("Không thế xóa chương trình giảm giá đang hoạt dộng");
+            } else if (currDate.after(discount.getEndDate())) {
+                throw new Exception("Không thế xóa chương trình giảm giá đã hết hạn");
+            } else {
+                discountProduct.setDiscount(null);
+            }
+        }
+        discountProductRepository.saveAll(discountProducts);
+    }
+
     public void addProductToDiscount(String discountCode, List<String> productIds) throws DiscountNotFound {
-        Discount discount =  discountRepository.findById(discountCode).orElseThrow(DiscountNotFound::new);
+        Discount discount = discountRepository.findById(discountCode).orElseThrow(DiscountNotFound::new);
         List<Product> products = productRepository.findByIdIn(productIds);
         List<Product> productSaved = products.stream().map(
                 product -> {
@@ -122,8 +147,8 @@ public class DiscountService {
         discount.setStartDate(
                 (updateJson.get("startDate") == null ? discount.getStartDate()
                         : DateFormat.parse((String) updateJson.get("startDate"))
-        ));
-        discount.setEndDate( (updateJson.get("endDate")) == null ? discount.getStartDate()
+                ));
+        discount.setEndDate((updateJson.get("endDate")) == null ? discount.getStartDate()
                 : DateFormat.parse((String) updateJson.get("endDate"))
         );
         discount.setDescription((updateJson.get("description") == null ? discount.getDescription() :

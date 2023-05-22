@@ -1,8 +1,10 @@
 package com.ss2fit.ss2backend.Controller;
 
 
+import com.ss2fit.ss2backend.DTO.ProductsCategoryDeleteionDTO;
 import com.ss2fit.ss2backend.Service.CategoryService;
 import com.ss2fit.ss2backend.utils.Exceptions.CategoryExistException;
+import com.ss2fit.ss2backend.utils.Exceptions.ProductNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +20,7 @@ public class CategoryController {
     @Autowired
     public CategoryService categoryService;
 
-    @PreAuthorize("isAuthenticated() and hasAnyAuthority('STAFF')")
+    @PreAuthorize("isAuthenticated() and hasAnyAuthority('STAFF', 'ADMIN')")
     @PostMapping("/create-category")
     public ResponseEntity newCategory(@RequestParam("name") String name) {
         try {
@@ -31,7 +33,7 @@ public class CategoryController {
         }
     }
 
-    @PreAuthorize("isAuthenticated() and hasAnyAuthority('STAFF')")
+    @PreAuthorize("isAuthenticated() and hasAnyAuthority('STAFF', 'ADMIN')")
     @PutMapping("/update-category")
     public void updateCategory(@RequestParam("id") String id,
                                @RequestParam("newName") String newName) {
@@ -46,7 +48,21 @@ public class CategoryController {
         );
     }
 
-    @PreAuthorize("isAuthenticated() and hasAnyAuthority('STAFF')")
+    @PreAuthorize("hasAnyAuthority('STAFF', 'ADMIN')")
+    @PostMapping("/delete-products")
+    public ResponseEntity deleteProductsFromCategory(@RequestBody ProductsCategoryDeleteionDTO productsCategoryDeleteionDTO) {
+        try {
+            categoryService.deleteProductsFromCategory(productsCategoryDeleteionDTO);
+            return ResponseEntity.ok("Delete successfully!");
+        } catch (Exception e) {
+            if (e instanceof ProductNotFoundException) {
+                return ResponseEntity.badRequest().body("Product Not Found");
+            }
+            return ResponseEntity.internalServerError().body(e.getMessage());
+        }
+    }
+
+    @PreAuthorize("isAuthenticated() and hasAnyAuthority('STAFF', 'ADMIN')")
     @DeleteMapping("/delete-category")
     public ResponseEntity deleteCategory(@RequestParam("categoryName") String categoryName) {
         try {

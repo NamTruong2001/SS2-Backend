@@ -182,7 +182,7 @@ public class ProductController {
         }
     }
 
-    @DeleteMapping("/remove-image")
+    @PostMapping("/remove-image")
     @PreAuthorize("hasAnyAuthority('STAFF', 'ADMIN')")
     public ResponseEntity removeProductImage(@RequestBody RemoveProductImagesDTO removeProductImagesDTO) {
         try {

@@ -1,6 +1,7 @@
 package com.ss2fit.ss2backend.Controller;
 
 import com.ss2fit.ss2backend.DTO.CreateDiscountDTO;
+import com.ss2fit.ss2backend.DTO.ProductsDiscountDeletionDTO;
 import com.ss2fit.ss2backend.Service.DiscountService;
 import com.ss2fit.ss2backend.utils.Exceptions.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.DateTimeException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,7 +33,7 @@ public class DiscountController {
         }
     }
 
-    @PutMapping("/add-applied-product")
+    @PostMapping("/add-applied-product")
     public ResponseEntity addAppliedProduct(@RequestBody Map updateJson) {
         try {
             List<String> newProductIds = (List<String>) updateJson.get("products");
@@ -70,6 +72,18 @@ public class DiscountController {
             mess.put("messege", "No records found");
             mess.put("deletedRows", 0);
             return ResponseEntity.badRequest().body(mess);
+        }
+    }
+
+    @PostMapping("/remove-applied-prouducts")
+    public ResponseEntity removeAppliedProducts(@RequestBody ProductsDiscountDeletionDTO productsDiscountDeletionDTO) {
+        try {
+           discountService.deleteMultipleProductFromDiscount(productsDiscountDeletionDTO);
+            return ResponseEntity.ok().body(
+                    "Xóa thành công"
+            );
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 

@@ -1,6 +1,7 @@
 package com.ss2fit.ss2backend.Service;
 
 
+import com.ss2fit.ss2backend.DTO.ProductsCategoryDeleteionDTO;
 import com.ss2fit.ss2backend.Model.Category;
 import com.ss2fit.ss2backend.Model.Product;
 import com.ss2fit.ss2backend.Repository.CategoryRepository;
@@ -11,7 +12,9 @@ import com.ss2fit.ss2backend.utils.GenerateRandomString;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class CategoryService {
@@ -44,6 +47,16 @@ public class CategoryService {
         Category category = categoryRepository.findById(id).orElseThrow();
         category.setName(newName);
         categoryRepository.save(category);
+    }
+
+    public void deleteProductsFromCategory(ProductsCategoryDeleteionDTO productsCategoryDeleteionDTO) {
+        List<Product> products = productRepository.findAllById(Arrays.asList(productsCategoryDeleteionDTO.getProductIds()));
+        List<Product> editProducts = products.stream().map(product -> {
+            product.setCategory(null);
+            return product;
+        }).collect(Collectors.toList());
+
+        productRepository.saveAll(editProducts);
     }
 
     public List<Category> getAllCategories() {

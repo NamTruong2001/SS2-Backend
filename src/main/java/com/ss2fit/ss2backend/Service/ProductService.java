@@ -159,7 +159,7 @@ public class ProductService {
             Date currentDate = new Date();
             for (DiscountProduct discountProduct : product.getDiscountProducts()) {
                 Discount discount = discountProduct.getDiscount();
-                if (currentDate.after(discount.getStartDate()) && currentDate.before(discount.getEndDate())) {
+                if (discount != null && currentDate.after(discount.getStartDate()) && currentDate.before(discount.getEndDate())) {
                     productDTO.setDiscountPrice(
                             discountProduct.getDiscountPrice()
                     );
@@ -199,9 +199,9 @@ public class ProductService {
             product.setDescription(updateProductDTO.getDescription());
             product.setPrice(updateProductDTO.getPrice());
             if (!product.getCategory().getName().equals(updateProductDTO.getNewCategory())) {
-                if (categoryRepository.existsByName(updateProductDTO.getName())) {
+                if (categoryRepository.existsByName(updateProductDTO.getNewCategory())) {
                     product.setCategory(
-                            categoryRepository.findByName(updateProductDTO.getName())
+                            categoryRepository.findByName(updateProductDTO.getNewCategory())
                     );
                 } else {
                     throw new CategoryNotFoundException("Category Not Found");
