@@ -23,4 +23,9 @@ public class SearchController {
                                                @RequestParam("to") Double end) {
      return ResponseEntity.ok(searchService.searchProductByPriceBetween(start, end));
     }
+
+    @GetMapping("/get-all")
+    public ResponseEntity clientSideSearch() {
+        return ResponseEntity.ok(searchService.getAllProduct());
+    }
 }
