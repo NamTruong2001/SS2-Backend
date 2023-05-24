@@ -1,5 +1,5 @@
 
-# SS2 FIT HANU PROJECT
+# SS2-04 FIT HANU PROJECT 
 
 ## Member of the groups:
 - Nguyễn Nam Trường 1901040234
