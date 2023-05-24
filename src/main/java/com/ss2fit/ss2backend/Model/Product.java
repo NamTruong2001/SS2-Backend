@@ -51,6 +51,7 @@ public class Product {
          Date currentDate = new Date();
          Optional<DiscountProduct> dp = this.discountProducts.stream().filter(
                  discountProduct ->
+                         discountProduct.getDiscount() != null &&
                     currentDate.after(discountProduct.getDiscount().getStartDate())
                             && currentDate.before(discountProduct.getDiscount().getEndDate())
          ).findFirst();

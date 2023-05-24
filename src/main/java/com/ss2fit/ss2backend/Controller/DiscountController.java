@@ -1,8 +1,10 @@
 package com.ss2fit.ss2backend.Controller;
 
 import com.ss2fit.ss2backend.DTO.CreateDiscountDTO;
+import com.ss2fit.ss2backend.DTO.DiscountDeletionDTO;
 import com.ss2fit.ss2backend.DTO.ProductsDiscountDeletionDTO;
 import com.ss2fit.ss2backend.Service.DiscountService;
+import com.ss2fit.ss2backend.utils.Exceptions.DiscountNotFound;
 import com.ss2fit.ss2backend.utils.Exceptions.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -42,6 +44,18 @@ public class DiscountController {
             return ResponseEntity.ok().body("Added successfully");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e);
+        }
+    }
+
+    @PostMapping("/delete")
+    public ResponseEntity delete(@RequestBody DiscountDeletionDTO discountId) {
+        try {
+            discountService.deleteDiscount(discountId.id);
+            return ResponseEntity.ok("Xóa thành công discount id: " + discountId );
+        } catch (DiscountNotFound de) {
+            return ResponseEntity.badRequest().body("Không tìm thấy discount id: " + discountId);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 

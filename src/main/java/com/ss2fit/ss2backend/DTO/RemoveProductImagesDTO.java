@@ -11,5 +11,5 @@ import java.util.List;
 @Setter
 public class RemoveProductImagesDTO {
     private String productId;
-    private List<Long> productImagesId;
+    private List<String> imagesUid;
 }

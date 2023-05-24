@@ -135,14 +135,12 @@ public class ProductService {
     }
 
     @Transactional
-    public void removeImagesFromProduct(List<Long> imageIdList, String productId) throws NotFoundException, ProductNotFoundException {
+    public void removeImagesFromProduct(List<String> imageIdList, String productId) throws ProductNotFoundException {
         Optional<Product> productOptional = productRepository.findById(productId);
         Product product = productOptional.orElseThrow(() -> new ProductNotFoundException("Product Not Found"));
-        for (Long imageId : imageIdList) {
-            ProductImage productImage = productImageRepository.findById(imageId).orElseThrow(NotFoundException::new);
-            product.removeProductImages(productImage);
+        for (String imageId : imageIdList) {
+            productImageRepository.deleteByImageURL(imageId);
         }
-        productRepository.save(product);
     }
 
     public ProductDTO applyDiscountAndConvertToDTO(Product product) {

@@ -15,6 +15,5 @@ public class UpdateProductDTO {
     private Double price;
     private String description;
     private Integer quantity;
-    @JsonProperty("category")
     private String newCategory;
 }

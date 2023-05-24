@@ -1,5 +1,6 @@
 package com.ss2fit.ss2backend.Model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -21,5 +22,6 @@ public class Discount {
     private Date createdDate;
     private Date startDate;
     private Date endDate;
+
 
 }

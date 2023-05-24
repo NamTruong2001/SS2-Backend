@@ -15,6 +15,7 @@ import com.ss2fit.ss2backend.utils.Exceptions.NotFoundException;
 import com.ss2fit.ss2backend.utils.GenerateRandomString;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -62,6 +63,22 @@ public class DiscountService {
         return productPrice - ((discountPercent / 100) * productPrice);
     }
 
+    public void deleteDiscount(String discountId) throws Exception {
+        Optional<Discount> discountOptional = discountRepository.findById(discountId);
+        if (discountOptional.isPresent()) {
+            Date currentDate = new Date();
+            Discount discount = discountOptional.get();
+            if (currentDate.before(discount.getStartDate())) {
+                discountProductRepository.deleteAll();
+                discountRepository.delete(discountOptional.get());
+            } else {
+                throw new Exception("Không thể xóa discount đang hoạt động hoặc đã hết hạn");
+            }
+        } else {
+            throw new DiscountNotFound();
+        }
+    }
+
     public Discount getDiscount(String code) throws DiscountNotFound {
         Optional<Discount> discountOptional = discountRepository.findById(code);
         return discountOptional.orElseThrow(DiscountNotFound::new);
@@ -72,7 +89,7 @@ public class DiscountService {
     }
 
     public List<Discount> getAllDiscount() {
-        return discountRepository.findAll();
+        return discountRepository.findAll(Sort.by(Sort.Direction.DESC, "createdDate"));
     }
 
     public List<Map<String, Object>> getDiscountProducts(String code) throws DiscountNotFound {
@@ -119,7 +136,7 @@ public class DiscountService {
                 discountProduct.setDiscount(null);
             }
         }
-        discountProductRepository.saveAll(discountProducts);
+        discountProductRepository.deleteAll(discountProducts);
     }
 
     public void addProductToDiscount(String discountCode, List<String> productIds) throws DiscountNotFound {

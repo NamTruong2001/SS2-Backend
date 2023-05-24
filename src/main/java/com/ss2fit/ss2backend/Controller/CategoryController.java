@@ -34,7 +34,7 @@ public class CategoryController {
     }
 
     @PreAuthorize("isAuthenticated() and hasAnyAuthority('STAFF', 'ADMIN')")
-    @PutMapping("/update-category")
+    @PostMapping("/update-category")
     public void updateCategory(@RequestParam("id") String id,
                                @RequestParam("newName") String newName) {
         categoryService.updateCategory(id, newName);

@@ -186,7 +186,7 @@ public class ProductController {
     @PreAuthorize("hasAnyAuthority('STAFF', 'ADMIN')")
     public ResponseEntity removeProductImage(@RequestBody RemoveProductImagesDTO removeProductImagesDTO) {
         try {
-            productService.removeImagesFromProduct(removeProductImagesDTO.getProductImagesId(),
+            productService.removeImagesFromProduct(removeProductImagesDTO.getImagesUid(),
                     removeProductImagesDTO.getProductId());
             return ResponseEntity.ok().body("OK");
         } catch (Exception e) {
