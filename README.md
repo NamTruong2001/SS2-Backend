@@ -19,7 +19,7 @@ For building and running the application you need:
 - First, go to `pom.xml` download all dependencies, you can use intellij which scan and auto download all the dependencies library to your project or you can explicitly download maven to download libraries and run
 - Second, set up your mysql database configuration, change the mysql username and password to use at your machine, you can also change the database name if you want
 - Third, go to `SS2-backend/src/main/java/com/ss2fit/ss2backend/Ss2BackendApplication.java` and run the main application or you can also use maven, spring jpa will make all tables for you
-- Go to /src/main/sql/all2.sql to load all the data to your database, in github, it is https://github.com/NamTruong2001/SS2-Backend/blob/master/src/main/sql/all2.sql
+- Go to /src/main/sql/Dump20230519.sql to load all the data to your database, in github, it is https://github.com/NamTruong2001/SS2-Backend/blob/master/src/main/sql/Dump20230519.sql
 - Go to http://localhost:8080/swagger-ui/index.html to see all the api 
 
 ## Account (username : password):
