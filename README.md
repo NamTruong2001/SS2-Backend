@@ -2,10 +2,10 @@
 # SS2-04 FIT HANU PROJECT 
 
 ## Member of the groups:
-- Nguyễn Nam Trường 1901040234
-- Nguyen Văn Lập 1901040121
-- Nguyễn Hoàng Long 1901040127
-- Nguyễn Việt Anh 1901040017
+- Nguyễn Nam Trường 1901040234 4C19
+- Nguyễn Văn Lập 1901040121 4C19
+- Nguyễn Hoàng Long 1901040127 1C19
+- Nguyễn Việt Anh 1901040017 5C19
 
 
 ## Requirements
