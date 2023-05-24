@@ -269,7 +269,6 @@ insert into cosmetic_ecommerce.user_role (user_id, role_id) values ('1KoJFShiwH'
 insert into cosmetic_ecommerce.user_role (user_id, role_id) values ('7jGmZkC8co', 1);
 insert into cosmetic_ecommerce.user_role (user_id, role_id) values ('AnoxPIx4Ab', 1);
 insert into cosmetic_ecommerce.user_role (user_id, role_id) values ('bw70cL4bzo', 1);
-insert into cosmetic_ecommerce.user_role (user_id, role_id) values ('DuZHJjOvfH', 1);
 insert into cosmetic_ecommerce.user_role (user_id, role_id) values ('GmL1YVZ188', 1);
 insert into cosmetic_ecommerce.user_role (user_id, role_id) values ('HqtErUIkhb', 1);
 insert into cosmetic_ecommerce.user_role (user_id, role_id) values ('S8qZgnGJUW', 1);
@@ -524,15 +523,3 @@ insert into cosmetic_ecommerce.order_history (id, date, history_order_status, in
 insert into cosmetic_ecommerce.order_history (id, date, history_order_status, info, order_id, user_id) values (74, '2023-05-24 08:39:31', 'DELIVERING', '', 'mfzV58otWP', 'xcsFASDs');
 
 
-insert into cosmetic_ecommerce.comment_and_rate (id, created_date, score, text, product_id, user_id) values (1, '2023-04-07 09:14:02', 4, 'Sản phẩm quá tuyệt vời, 100 điểm', 'Al2fwjVbcv', 'S8qZgnGJUW');
-insert into cosmetic_ecommerce.comment_and_rate (id, created_date, score, text, product_id, user_id) values (2, '2023-04-07 17:23:57', 3, 'Sản phẩm đẹp nhưng hơi mùi', 'Al2fwjVbcv', 'S8qZgnGJUW');
-insert into cosmetic_ecommerce.comment_and_rate (id, created_date, score, text, product_id, user_id) values (3, '2023-04-07 17:24:27', 1, 'Lừa đảo vcl', 'Al2fwjVbcv', null);
-insert into cosmetic_ecommerce.comment_and_rate (id, created_date, score, text, product_id, user_id) values (4, '2023-04-09 21:56:18', 4, 'cũng được', 'Al2fwjVbcv', null);
-
-
-insert into cosmetic_ecommerce.comment_and_rate_comment_image (comment_and_rate_id, comment_image_id) values (1, 1);
-insert into cosmetic_ecommerce.comment_and_rate_comment_image (comment_and_rate_id, comment_image_id) values (1, 2);
-
-
-insert into cosmetic_ecommerce.comment_image (id, url) values (1, '/images/e43c8cdc-976c-48df-9901-fc30626af182.jpeg');
-insert into cosmetic_ecommerce.comment_image (id, url) values (2, '/images/a78c2fef-683c-457d-abb1-50802c2d4c93.png');
