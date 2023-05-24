@@ -63,7 +63,7 @@ public class CategoryController {
     }
 
     @PreAuthorize("isAuthenticated() and hasAnyAuthority('STAFF', 'ADMIN')")
-    @DeleteMapping("/delete-category")
+    @PostMapping ("/delete-category")
     public ResponseEntity deleteCategory(@RequestParam("categoryName") String categoryName) {
         try {
             categoryService.deleteCategory(categoryName);

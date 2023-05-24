@@ -119,7 +119,7 @@ public class ProductController {
         return "OK";
     }
 
-    @PreAuthorize("isAuthenticated() and hasAnyAuthority('STAFF')")
+    @PreAuthorize("isAuthenticated() and hasAnyAuthority('STAFF, ADMIN')")
     @PostMapping("/delete-product")
     public ResponseEntity deleteProduct(@RequestParam("productId") String productId) {
         try {
